@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NCL - Formación · Demo Retos</title>
+<meta name="theme-color" content="#0f6d5a">
+<style>
+:root{
+  --green:#0f6d5a;
+  --accent:#00A651;
+  --white:#ffffff;
+  --muted:#6b7a78;
+  --ink:#0b1e20;
+}
+
+/* Reset */
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--white);color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial}
+
+/* Topbar */
+.topbar{background:var(--green);color:#fff;padding:10px 16px;position:sticky;top:0;z-index:40}
+.topbar .wrap{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.topbar h1{margin:0;font-size:18px;font-weight:800}
+
+/* Hero institucional (portada) */
+.hero{
+  background: radial-gradient(1200px 400px at 10% -10%, #0db37f22, transparent),
+              radial-gradient(1200px 400px at 90% -10%, #0db37f22, transparent),
+              linear-gradient(180deg, #f8fffd, #ffffff);
+  border-bottom:1px solid #e6efed;
+}
+.hero-inner{max-width:1100px;margin:0 auto;padding:22px 16px}
+.hero-row{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.hero-logos{display:flex;gap:14px;align-items:center}
+.hero-logos .badge{
+  width:70px;height:70px;border-radius:50%;
+  display:grid;place-items:center;background:#0b112b;border:1px solid rgba(0,0,0,.08);overflow:hidden;
+  box-shadow:0 8px 20px rgba(0,0,0,.08)
+}
+.hero-logos .badge img{width:62px;height:62px;object-fit:contain}
+.hero-copy{flex:1 1 420px}
+.hero-title{font-size:36px;margin:0 0 6px 0;color:#0a3b33;font-weight:900;letter-spacing:.2px}
+.hero-sub{margin:0;color:#1f5b51}
+.hero-line{height:2px;background:#dce9e6;border-radius:2px;margin-top:14px}
+
+/* Page content */
+.page{max-width:1100px;margin:14px auto 22px auto;padding:0 16px}
+.h1{font-size:40px;margin:16px 0 4px 0}
+.section-title{color:#c79c00;font-weight:800;margin:10px 0 14px}
+
+/* Grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;margin-top:6px}
+.card{
+  background:var(--green);color:#e9f7f4;border-radius:10px;padding:18px;text-align:center;
+  min-height:120px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;
+  border:1px solid rgba(255,255,255,.12);transition:transform .12s ease, box-shadow .12s ease;
+  box-shadow:0 2px 0 rgba(0,0,0,.06)
+}
+.card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.12)}
+.card .title{font-weight:900}
+.card .points{opacity:.95;margin-top:10px}
+
+/* Modal reto */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:16px;z-index:60}
+.modal.open{display:flex}
+.box{width:100%;max-width:900px;background:#fff;border-radius:14px;overflow:hidden;border:1px solid #e3ecea;box-shadow:0 24px 60px rgba(0,0,0,.28)}
+.box header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #eef3f2;background:linear-gradient(180deg,#fafdff,transparent)}
+.box header .pill{border:1px solid #cfe1de;border-radius:10px;padding:6px 10px;font-weight:800;color:#0b3f36;background:#f2fbf9}
+.box header button{padding:8px 12px;border-radius:10px;border:1px solid #dfe7e6;background:#fff;cursor:pointer}
+.box main{padding:0 18px 18px 18px;max-height:90vh;overflow:auto}
+
+/* Heading reto */
+.hero-rt{text-align:center;padding:18px 0 0}
+.hero-rt h2{margin:0;font-size:clamp(22px,4.6vw,34px);font-weight:900;color:#0b3f36}
+.hero-rt .pts{margin-top:6px;color:#1d4d44;font-weight:900}
+
+/* Logo reto */
+.modal-logo{display:block;margin:10px auto 14px auto;width:min(320px,70%);height:auto;object-fit:contain}
+
+/* Texto reto */
+.desc p{margin:0 0 10px;color:var(--ink);line-height:1.6}
+.desc ol, .desc ul{margin-left:18px;margin-bottom:6px}
+
+/* Screenshot */
+.screenshot{display:block;max-width:100%;max-height:300px;height:auto;border:1px solid #e7eceb;border-radius:8px;margin:12px auto;cursor:zoom-in}
+
+/* Input & acciones */
+.field{margin-top:12px}
+.field label{display:block;font-weight:800;margin:12px 0 6px}
+.field input{width:100%;padding:12px;border-radius:10px;border:1px solid #ccd8d6;background:#fbfdfc}
+.actions{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}
+.btn{padding:10px 14px;border-radius:10px;font-weight:800;border:none;cursor:pointer}
+.btn.primary{background:var(--accent);color:#042a20}
+.btn.ghost{background:#fff;border:1px solid #dfe7e6}
+.msg{min-height:22px;font-weight:900}
+.msg.ok{color:#0a7f66}
+.msg.err{color:#b70022}
+
+/* Lightbox */
+.lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.92);z-index:70;padding:20px}
+.lightbox.open{display:flex}
+.lightbox img{max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+
+/* Modal final */
+.finalmodal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:80;padding:16px}
+.finalmodal.open{display:flex}
+.finalbox{max-width:620px;width:100%;background:#ffffff;border-radius:14px;border:1px solid #e2ecea;box-shadow:0 30px 70px rgba(0,0,0,.35);padding:18px 18px 22px}
+.finalbox h3{margin:6px 0 10px 0;font-size:26px;color:#0b3f36}
+.finalbox p{margin:0 0 8px 0}
+.finalbox .time{font-weight:900;color:#0a7f66}
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="wrap">
+    <h1>Entorno de demostración · Desafíos</h1>
+  </div>
+</div>
+
+<!-- Hero institucional -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-row">
+      <div class="hero-logos" aria-label="unidades">
+        <span class="badge"><img src="Logo GC.png" alt="GC"></span>
+        <span class="badge"><img src="Logo CLM.png" alt="CLM"></span>
+        <span class="badge"><img src="Logo_CIBERLIGA.png" alt="CiberLiga"></span>
+      </div>
+      <div class="hero-copy">
+        <h2 class="hero-title">CiberLiga • National CyberLeague</h2>
+        <p class="hero-sub">Formación práctica, investigación OSINT y disciplina operativa. Resuelve cada desafío para desbloquear el siguiente.</p>
+      </div>
+    </div>
+    <div class="hero-line"></div>
+  </div>
+</div>
+
+<!-- Page -->
+<div class="page">
+  <div class="h1">Desafíos</div>
+  <div class="section-title">NCL FINAL 2024-2025</div>
+
+  <div id="grid" class="grid"></div>
+</div>
+
+<!-- Modal reto -->
+<div id="modal" class="modal" aria-hidden="true">
+  <div class="box" role="dialog" aria-labelledby="ch-title">
+    <header>
+      <div class="pill">Desafío</div>
+      <button class="btn ghost" onclick="closeModal()" aria-label="Cerrar">✕</button>
+    </header>
+    <main id="ch-body"></main>
+  </div>
+</div>
+
+<!-- Lightbox imagen -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+  <img id="lightboxImg" src="" alt="Imagen ampliada">
+</div>
+
+<!-- Modal final -->
+<div id="finalModal" class="finalmodal" aria-hidden="true">
+  <div class="finalbox">
+    <h3>🎉 ¡Enhorabuena! Lo conseguiste</h3>
+    <p>Ya eres un <strong>experto en la Ciberseguridad</strong> de la CiberLiga.</p>
+    <p>⏱️ Tiempo total: <span id="finalTime" class="time">--:--:--</span></p>
+    <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn primary" id="btnOK">Aceptar</button>
+      <button class="btn ghost" id="btnRestart">Volver a empezar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==================== CONFIG / CLAVES ==================== */
+const KEY_PROG="ncl_demo_progress_v9";
+const KEY_T0="ncl_demo_time_start";
+const KEY_T1="ncl_demo_time_end";
+
+/* Al refrescar: SIEMPRE empezar de cero */
+(function hardResetOnLoad(){
+  try{
+    localStorage.removeItem(KEY_T0);
+    localStorage.removeItem(KEY_T1);
+    localStorage.setItem(KEY_PROG, JSON.stringify({max:0}));
+  }catch(e){}
+})();
+
+/* ==================== DATOS DE RETOS ==================== */
+const BLOG = '<a href="https://noticias.cybce.com/" target="_blank" rel="noopener">blog</a>';
+
+const CHALLS = [
+  {
+    id:0, title:"NCL FINAL 0 - Bienvenidos a la final", points:10,
+    html: `
+      <img src="Logo_CIBERLIGA.png" class="modal-logo" alt="CiberLiga">
+      <div class="desc">
+        <p>🎮 <strong>¡Bienvenidos a la Final de la Ciberliga Pre-Amateur!</strong> 🎮</p>
+        <p>¡Este es el momento que has estado esperando! Llegar hasta aquí ha requerido habilidad, estrategia y determinación, pero la verdadera prueba comienza ahora. Este reto es el punto de partida oficial para todos los finalistas.</p>
+        <p><strong>👉 Instrucciones:</strong></p>
+        <p>Antes de lanzarte a la acción, recuerda algo fundamental en cualquier competición: <strong>leer bien los enunciados</strong>. La flag de este reto es simplemente <em>"empezar"</em>.</p>
+        <p>📢 Prepárate, mantén la concentración y disfruta de la final. ¡Mucha suerte! 🚀🏆</p>
+      </div>
+    `,
+    expected:"empezar", norm:"lower"
+  },
+  {
+    id:1, title:"NCL FINAL 1 - ¿Quién me está estafando?", points:400,
+    html: `
+      <img src="Logo_CIBERLIGA.png" class="modal-logo" alt="CiberLiga">
+      <img src="Pokemon.png" alt="Captura Telegram" class="screenshot" onclick="openLightbox(this.src)">
+      <div class="desc">
+        <p>En un grupo de Telegram dedicado a la compra y venta de cartas Pokémon hay un estafador que engaña a los compradores, recibe el dinero y desaparece sin enviar las cartas prometidas. Afortunadamente, hemos conseguido capturas de pantalla de conversaciones en el grupo. En ellas, se pueden ver mensajes del estafador, su alias y, en algunos casos, su número de teléfono.</p>
+        <p><strong>Tu misión</strong></p>
+        <ol>
+          <li>Analiza la captura de pantalla proporcionada.</li>
+          <li>Identifica el número de teléfono del estafador a partir de la información disponible.</li>
+          <li>Cruza la información con posibles bases de datos públicas para tratar de revelar su verdadera identidad. Utiliza diferentes motores de búsqueda (Google, Bing).</li>
+          <li>La bandera de este reto es el <strong>nombre completo</strong> del estafador.</li>
+        </ol>
+      </div>
+    `,
+    expected:"Federico Ramírez González", norm:"lower"
+  },
+  {
+    id:2, title:"NCL FINAL 2 - Mail", points:400,
+    html: `
+      <img src="Logo_CIBERLIGA.png" class="modal-logo" alt="CiberLiga">
+      <img src="Pokemon2.png" alt="Conversación con enlace al blog" class="screenshot" onclick="openLightbox(this.src)">
+      <div class="desc">
+        <p>El estafador de cartas Pokémon no solo opera en Telegram, sino que también tiene un ${BLOG} donde publica sus cartas.</p>
+        <p><strong>Tu misión</strong></p>
+        <ol>
+          <li>Rastrea la IP del servidor donde está alojado el ${BLOG}, puedes usar herramientas OSINT como <a href="https://ping.eu" target="_blank"><b>ping.eu</b></a> o símbolo del sistema en tu sistema operativo con el comando ping.</li>
+          <li>Realiza una búsqueda <a href="https://whois.com/" target="_blank"><b>WHOIS</b></a> con la IP proporcionada para obtener información sobre el propietario del dominio.</li>
+          <li>Identifica si hay un correo electrónico de contacto en los registros WHOIS.</li>
+          <li>Si la información está oculta, busca alternativas como registros históricos u OSINT.</li>
+        </ol>
+      </div>
+    `,
+    expected:"claudio.chn@gmail.com", norm:"lower"
+  },
+  {
+    id:3, title:"NCL FINAL 3 - Club social", points:400,
+    html: `
+      <img src="Logo_CIBERLIGA.png" class="modal-logo" alt="CiberLiga">
+      <div class="desc">
+        <p>¡Bien hecho! Has logrado encontrar el correo electrónico del estafador. Sin embargo, aún queda una pieza clave en el rompecabezas: el estafador pertenece a un grupo social. En estas reuniones se tratan proyectos relacionados con seguridad digital, forense digital, radio definida por software (SDR) y hacking de hardware. Este grupo utiliza diversas plataformas para organizar sus encuentros y compartir conocimientos sobre estas áreas.</p>
+        <p>🔍 <strong>Tu misión:</strong></p>
+        <ul>
+          <li>Utiliza herramientas OSINT para buscar coincidencias entre el correo y posibles pseudónimos usados en distintas plataformas.</li>
+          <li>Identifica si el estafador ha usado el mismo correo en redes sociales, foros o marketplaces.</li>
+          <li>La bandera de este reto es el lugar de reunión de dicho grupo en formato "calle número".</li>
+        </ul>
+      </div>
+    `,
+    expected:"castellana 45", norm:"lower_space"
+  },
+  {
+    id:4, title:"NCL FINAL 4 - Uso de IA en imágenes", points:400,
+    html: `
+      <img src="Logo_CIBERLIGA.png" class="modal-logo" alt="CiberLiga">
+      <div class="desc">
+        <p>El ${BLOG} del estafador está lleno de imágenes llamativas, pero algo en ellas parece sospechoso. Creemos que podrían haber sido generadas por inteligencia artificial para hacer que su contenido parezca más legítimo y profesional.</p>
+        <p>🔍 <strong>Tu misión</strong></p>
+        <ul>
+          <li>Analiza irregularidades en los detalles de las imágenes, como texturas extrañas, dedos mal formados o textos borrosos.</li>
+          <li>Extrae los metadatos de las imágenes para buscar indicios en los datos.</li>
+          <li>Puedes utilizar herramientas OSINT de detección como <a href="https://detectaia.ligagc.com/" target="_blank"><b>Detectaia</b></a> o <a href="https://fotoforensics.com/" target="_blank"><b>Fotoforensic</b></a>.</li>
+          <li>La bandera de este reto es el nombre de archivo de la imagen generada por IA en el blog.</li>
+        </ul>
+      </div>
+    `,
+    expected:"poke.png", norm:"exact"
+  },
+  {
+    id:5, title:"NCL FINAL 5 - Localizando el segundo número del estafador", points:400,
+    html: `
+      <img src="Logo_CIBERLIGA.png" class="modal-logo" alt="CiberLiga">
+      <div class="desc">
+        <p>Ya hemos obtenido información clave sobre el estafador, pero sospechamos que está utilizando un segundo número de teléfono para cubrir sus huellas.</p>
+        <p>🔍 <strong>Tu misión</strong></p>
+        <ul>
+          <li>Realiza un WHOIS sobre la IP del blog para extraer los datos de contacto del propietario del dominio.</li>
+          <li>Identifica el número de teléfono en los registros WHOIS.</li>
+          <li>La bandera de este reto es el número de teléfono con el prefijo correspondiente a España.</li>
+        </ul>
+        <p style="color:#6b7a78">Ejemplo de bandera: +49678678678.</p>
+      </div>
+    `,
+    expected:"+34622778333", norm:"exact"
+  },
+  {
+    id:6, title:"NCL FINAL 6 - Metadatos con coordenadas", points:600,
+    html: `
+      <img src="Logo_CIBERLIGA.png" class="modal-logo" alt="CiberLiga">
+      <div class="desc">
+        <p>El estafador ha cometido un error: algunas imágenes publicadas en su blog contienen metadatos ocultos que podrían revelar su ubicación o lugares que frecuenta. Se ha detectado que una de las imágenes tiene coordenadas GPS en sus metadatos, pero aún no sabemos qué significa.</p>
+        <p>🔍 <strong>Tu misión</strong></p>
+        <ul>
+          <li>Extrae los metadatos de las imágenes del blog utilizando herramientas OSINT.</li>
+          <li>Busca coordenadas GPS en los metadatos de las imágenes.</li>
+          <li>Introduce las coordenadas en Google Maps u otra herramienta de geolocalización para identificar el lugar exacto.</li>
+          <li>Descubre el nombre del sitio, que servirá como la bandera para este reto.</li>
+        </ul>
+      </div>
+    `,
+    expected:"el quinto pino", norm:"lower"
+  },
+  {
+    id:7, title:"NCL FINAL 7 - Cazando credenciales", points:800,
+    html: `
+      <img src="Logo_CIBERLIGA.png" class="modal-logo" alt="CiberLiga">
+      <div class="desc">
+        <p>Parece que el estafador ha cometido un grave descuido: un archivo Excel con contraseñas ha sido encontrado en el sistema de ficheros de su blog. Sabemos que en este archivo hay credenciales para múltiples servicios, y nuestra misión es descubrir su usuario y contraseña de Treflix.</p>
+        <p>🔍 <strong>Tu misión</strong></p>
+        <ul>
+          <li>Realiza búsquedas avanzadas utilizando técnicas de Directory Listing para localizar el archivo (Ctrl+U).</li>
+          <li>Descarga el archivo Excel y analiza su contenido en busca de credenciales.</li>
+          <li>Identifica la contraseña de Treflix de Federico Ramírez, que servirá como bandera para este reto.</li>
+        </ul>
+      </div>
+    `,
+    expected:"Rty!92X#", norm:"exact"
+  }
+];
+
+/* ==================== PROGRESO + TIEMPOS ==================== */
+function getProg(){return JSON.parse(localStorage.getItem(KEY_PROG)||'{"max":0}');}
+function setProg(n){localStorage.setItem(KEY_PROG, JSON.stringify({max:n}));}
+function now(){return Date.now();}
+function fmt(ms){
+  const s=Math.floor(ms/1000);
+  const h=String(Math.floor(s/3600)).padStart(2,'0');
+  const m=String(Math.floor((s%3600)/60)).padStart(2,'0');
+  const ss=String(s%60).padStart(2,'0');
+  return `${h}:${m}:${ss}`;
+}
+function startClockIfNeeded(chId){
+  if(chId===0 && !localStorage.getItem(KEY_T0)){
+    localStorage.setItem(KEY_T0, String(now()));
+  }
+}
+function stopClockIfFinal(chId){
+  if(chId===CHALLS.length-1){
+    localStorage.setItem(KEY_T1, String(now()));
+    const t0=Number(localStorage.getItem(KEY_T0)||0);
+    const t1=Number(localStorage.getItem(KEY_T1)||0);
+    document.getElementById('finalTime').textContent = (t0>0 && t1>t0)? fmt(t1-t0) : "--:--:--";
+    openFinal();
+  }
+}
+
+/* ==================== UI: GRID PROGRESIVO ==================== */
+const grid=document.getElementById('grid');
+function renderGrid(){
+  const {max}=getProg();
+  grid.innerHTML="";
+  CHALLS.forEach(ch=>{
+    if(ch.id<=max){  // <- SOLO mostramos desbloqueados
+      const card=document.createElement('button');
+      card.className='card';
+      card.type='button';
+      card.addEventListener('click',()=>openCh(ch.id));
+      card.innerHTML = `<div class="title">${ch.title}</div><div class="points">${ch.points}</div>`;
+      grid.appendChild(card);
+    }
+  });
+}
+renderGrid();
+
+/* ==================== MODAL RETO ==================== */
+const modal=document.getElementById('modal');
+const chBody=document.getElementById('ch-body');
+
+function openCh(id){
+  const ch = CHALLS.find(c=>c.id===id);
+  chBody.innerHTML = `
+    <div class="hero-rt">
+      <h2>${ch.title}</h2>
+      <div class="pts">${ch.points}</div>
+    </div>
+    ${ch.html}
+    <div class="field">
+      <label for="flagInput">Bandera</label>
+      <input id="flagInput" autocomplete="off" placeholder="Introduce la bandera">
+      <div class="actions">
+        <button class="btn primary" id="sendBtn">Enviar</button>
+        <button class="btn ghost" onclick="closeModal()">Cerrar</button>
+        <span id="msg" class="msg"></span>
+      </div>
+    </div>`;
+  modal.classList.add('open');
+
+  // Enviar con ENTER o botón
+  const input = document.getElementById('flagInput');
+  const btn = document.getElementById('sendBtn');
+  const send = ()=>submitFlag(id);
+  btn.addEventListener('click', send);
+  input.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); send(); } });
+  setTimeout(()=>input.focus(),30);
+}
+function closeModal(){ modal.classList.remove('open'); }
+
+/* ==================== LIGHTBOX ==================== */
+const lightbox=document.getElementById('lightbox');
+const lightboxImg=document.getElementById('lightboxImg');
+function openLightbox(src){ lightboxImg.src=src; lightbox.classList.add('open'); }
+function closeLightbox(){ lightbox.classList.remove('open'); lightboxImg.src=''; }
+
+/* ==================== MODAL FINAL (sin bucles) ==================== */
+const finalModal=document.getElementById('finalModal');
+const btnOK=document.getElementById('btnOK');
+const btnRestart=document.getElementById('btnRestart');
+
+function openFinal(){ finalModal.classList.add('open'); }
+function hideFinal(){ finalModal.classList.remove('open'); }
+function resetProgress(){
+  localStorage.removeItem(KEY_T0);
+  localStorage.removeItem(KEY_T1);
+  setProg(0);
+  renderGrid();
+}
+function closeFinal(){ hideFinal(); resetProgress(); }
+function resetAll(){ hideFinal(); resetProgress(); }
+
+finalModal.addEventListener('click',e=>{ if(e.target===finalModal) closeFinal(); });
+btnOK.addEventListener('click', closeFinal);
+btnRestart.addEventListener('click', resetAll);
+
+/* ==================== VALIDACIÓN ==================== */
+function normalize(kind, v){
+  v = (v || "").trim();
+
+  // Normalización básica
+  if (kind === "lower") v = v.toLowerCase();
+  if (kind === "lower_space") v = v.toLowerCase().replace(/_/g, ' ').replace(/\s+/g, ' ');
+
+  // 🔧 Excepción para el reto 1 (Federico Ramírez González): quitar tildes
+  v = v.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // elimina tildes
+
+  return v;
+}
+function submitFlag(id){
+  const ch = CHALLS.find(c=>c.id===id);
+  const input = document.getElementById('flagInput');
+  const user = normalize(ch.norm, input.value || "");
+  const exp  = normalize(ch.norm, ch.expected);
+  const msg  = document.getElementById('msg');
+  if(user===exp){
+    msg.textContent="Correcto ✅"; msg.classList.remove('err'); msg.classList.add('ok');
+    startClockIfNeeded(id);
+    const p=getProg();
+    if(p.max < id+1) setProg(id+1);
+    stopClockIfFinal(id);
+    setTimeout(()=>{ closeModal(); renderGrid(); }, 600);
+  }else{
+    msg.textContent="Incorrecto ❌"; msg.classList.remove('ok'); msg.classList.add('err');
+  }
+}
+
+/* ESC / cerrar con click fuera */
+window.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if(lightbox.classList.contains('open')) closeLightbox();
+    else if(finalModal.classList.contains('open')) closeFinal();
+    else closeModal();
+  }
+});
+modal.addEventListener('click',e=>{ if(e.target===modal) closeModal(); });
+</script>
+</body>
+</html>

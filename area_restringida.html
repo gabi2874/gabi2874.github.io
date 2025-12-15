@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Área restringida</title>
+<style>
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#f6f6f8;margin:0;padding:40px;color:#0b1e20}
+  .card{max-width:720px;margin:40px auto;padding:36px;border-radius:12px;background:#fff;box-shadow:0 12px 40px rgba(12,20,18,0.06);text-align:center}
+  h1{margin:6px 0 20px;font-weight:700}
+  p{color:#445}
+  input[type="text"]{width:60%;padding:10px;border-radius:8px;border:1px solid #cfcfcf;margin-top:18px;font-size:16px}
+  button{padding:10px 14px;border-radius:8px;border:none;background:#0f6d5a;color:#fff;font-weight:800;margin-left:10px;cursor:pointer}
+  .ok{color:green;margin-top:18px}
+  .err{color:#b30000;margin-top:18px}
+  small{display:block;margin-top:12px;color:#666}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Área restringida</h1>
+    <p>Para acceder necesitas introducir la contraseña. Esta página está pensada para que la inspecciones: la contraseña está en el código (no se muestra visualmente).</p>
+
+    <div>
+      <input id="pwd" type="text" placeholder="Introduce la contraseña">
+      <button id="btn">Comprobar</button>
+    </div>
+
+    <div id="resp" aria-live="polite"></div>
+
+    <small>Si la clave es correcta verás el mensaje y podrás volver al reto para introducirla allí.</small>
+  </div>
+
+<script>
+/*
+  ATENCIÓN: la contraseña está en esta variable JavaScript y NO se muestra en la página.
+  Está "en el código" como pediste; al inspeccionar la página (ver código fuente o DevTools),
+  se podrá ver la variable SECRET y su valor.
+*/
+const SECRET = "9876"; // <<-- contraseña (no visible en la interfaz)
+
+/* Lógica de comprobación */
+document.getElementById('btn').addEventListener('click',()=>{
+  const v = (document.getElementById('pwd').value||"").trim();
+  const r = document.getElementById('resp');
+  if(v === SECRET){
+    r.className='ok';
+    r.textContent = "Contraseña correcta ✅. Vuelve al reto y escribe la contraseña para continuar.";
+    // opcional: seleccionamos el campo para que el usuario lo copie fácilmente
+    document.getElementById('pwd').select();
+  } else {
+    r.className='err';
+    r.textContent = "Contraseña incorrecta. Intenta de nuevo.";
+  }
+});
+
+/* Además detectamos 'Enter' en el input */
+document.getElementById('pwd').addEventListener('keydown', e=>{
+  if(e.key === 'Enter'){ e.preventDefault(); document.getElementById('btn').click(); }
+});
+</script>
+</body>
+</html>

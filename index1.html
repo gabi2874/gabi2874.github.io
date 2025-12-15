@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NCL - Escape Room Ciberliga VII</title>
+<meta name="theme-color" content="#0f6d5a">
+<style>
+:root{
+  --green:#0f6d5a;
+  --accent:#00A651;
+  --white:#ffffff;
+  --muted:#6b7a78;
+  --ink:#0b1e20;
+}
+
+/* Reset */
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--white);color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial}
+
+/* Topbar */
+.topbar{background:var(--green);color:#fff;padding:10px 16px;position:sticky;top:0;z-index:40}
+.topbar .wrap{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.topbar h1{margin:0;font-size:18px;font-weight:800}
+
+/* Hero */
+.hero{
+  background: radial-gradient(1200px 400px at 10% -10%, #0db37f22, transparent),
+              radial-gradient(1200px 400px at 90% -10%, #0db37f22, transparent),
+              linear-gradient(180deg, #f8fffd, #ffffff);
+  border-bottom:1px solid #e6efed;
+}
+.hero-inner{max-width:1100px;margin:0 auto;padding:22px 16px}
+.hero-row{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.hero-logos{display:flex;gap:14px;align-items:center}
+.hero-logos .badge{
+  width:70px;height:70px;border-radius:50%;
+  display:grid;place-items:center;background:#0b112b;border:1px solid rgba(0,0,0,.08);overflow:hidden;
+  box-shadow:0 8px 20px rgba(0,0,0,.08)
+}
+.hero-logos .badge img{width:62px;height:62px;object-fit:contain}
+.hero-copy{flex:1 1 420px}
+.hero-title{font-size:36px;margin:0 0 6px 0;color:#0a3b33;font-weight:900}
+.hero-sub{margin:0;color:#1f5b51}
+.hero-line{height:2px;background:#dce9e6;border-radius:2px;margin-top:14px}
+
+/* Page */
+.page{max-width:1100px;margin:14px auto 22px auto;padding:0 16px}
+.h1{font-size:40px;margin:16px 0 4px 0}
+.section-title{color:#c79c00;font-weight:800;margin:10px 0 14px}
+
+/* Grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;margin-top:6px}
+.card{
+  background:var(--green);color:#e9f7f4;border-radius:10px;padding:18px;text-align:center;
+  min-height:120px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;
+  border:1px solid rgba(255,255,255,.12);transition:transform .12s ease, box-shadow .12s ease;
+  box-shadow:0 2px 0 rgba(0,0,0,.06)
+}
+.card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.12)}
+.card .title{font-weight:900}
+.card .points{opacity:.95;margin-top:10px}
+
+/* Modal */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:16px;z-index:60}
+.modal.open{display:flex}
+.box{width:100%;max-width:900px;background:#fff;border-radius:14px;overflow:hidden;border:1px solid #e3ecea;box-shadow:0 24px 60px rgba(0,0,0,.28)}
+.box header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #eef3f2;background:linear-gradient(180deg,#fafdff,transparent)}
+.box header .pill{border:1px solid #cfe1de;border-radius:10px;padding:6px 10px;font-weight:800;color:#0b3f36;background:#f2fbf9}
+.box header button{padding:8px 12px;border-radius:10px;border:1px solid #dfe7e6;background:#fff;cursor:pointer}
+.box main{padding:0 18px 18px 18px;max-height:90vh;overflow:auto}
+
+/* Text reto */
+.hero-rt{text-align:center;padding:18px 0 0}
+.hero-rt h2{margin:0;font-size:clamp(22px,4.6vw,34px);font-weight:900;color:#0b3f36}
+.hero-rt .pts{margin-top:6px;color:#1d4d44;font-weight:900}
+.modal-logo{display:block;margin:10px auto 14px auto;width:min(320px,70%);height:auto;object-fit:contain}
+.desc p{margin:0 0 10px;color:var(--ink);line-height:1.6}
+.screenshot{display:block;max-width:100%;max-height:300px;height:auto;border:1px solid #e7eceb;border-radius:8px;margin:12px auto;cursor:zoom-in}
+
+/* Hidden flag */
+.hidden-flag {
+  color: white;
+  user-select: text;
+}
+.hidden-flag::selection {
+  color: black;
+  background: #d3d3d3;
+}
+
+/* Input */
+.field{margin-top:12px}
+.field label{display:block;font-weight:800;margin:12px 0 6px}
+.field input{width:100%;padding:12px;border-radius:10px;border:1px solid #ccd8d6;background:#fbfdfc}
+.actions{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}
+.btn{padding:10px 14px;border-radius:10px;font-weight:800;border:none;cursor:pointer}
+.btn.primary{background:var(--accent);color:#042a20}
+.btn.ghost{background:#fff;border:1px solid #dfe7e6}
+.msg{min-height:22px;font-weight:900}
+.msg.ok{color:#0a7f66}
+.msg.err{color:#b70022}
+
+/* Lightbox fix: hide empty src */
+#lightboxImg[src=""] { display: none; }
+
+/* Final */
+.finalmodal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:80;padding:16px}
+.finalmodal.open{display:flex}
+.finalbox{max-width:620px;width:100%;background:#ffffff;border-radius:14px;border:1px solid #e2ecea;box-shadow:0 30px 70px rgba(0,0,0,.35);padding:18px 18px 22px}
+.finalbox h3{margin:6px 0 10px 0;font-size:26px;color:#0b3f36}
+.finalbox p{margin:0 0 8px 0}
+.finalbox .time{font-weight:900;color:#0a7f66}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="wrap"><h1>Escape Room Ciberliga VII</h1></div></div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-row">
+      <div class="hero-logos">
+        <span class="badge"><img src="Logo GC.png" alt="GC"></span>
+        <span class="badge"><img src="Logo CLM.png" alt="CLM"></span>
+        <span class="badge"><img src="Logo_CIBERLIGA.png" alt="CiberLiga"></span>
+      </div>
+      <div class="hero-copy">
+        <h2 class="hero-title">CiberLiga • National CyberLeague</h2>
+        <p class="hero-sub">Escape Room formativo: OSINT, metadatos e investigación digital.</p>
+      </div>
+    </div>
+    <div class="hero-line"></div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="h1">Desafíos</div>
+  <div class="section-title">Ciberliga VII - Fase de entrenamiento</div>
+  <div id="grid" class="grid"></div>
+</div>
+
+<div id="modal" class="modal"><div class="box"><header><div class="pill">Desafío</div><button class="btn ghost" onclick="closeModal()">✕</button></header><main id="ch-body"></main></div></div>
+
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+  <img id="lightboxImg"
+       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+       alt="">
+</div>
+
+<div id="finalModal" class="finalmodal">
+  <div class="finalbox">
+    <h3>🎯 ¡Misión cumplida, agente!</h3>
+    <p>Has completado todos los retos del Escape Room Ciberliga VII.</p>
+    <p>⏱️ Tiempo total: <span id="finalTime" class="time">--:--:--</span></p>
+    <div style="margin-top:10px;display:flex;gap:10px">
+      <button class="btn primary" id="btnOK">Aceptar</button>
+      <button class="btn ghost" id="btnRestart">Volver a empezar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const KEY_PROG="ncl_escaperoom_progress_v1";
+const KEY_T0="ncl_escaperoom_t0";
+const KEY_T1="ncl_escaperoom_t1";
+
+(function initProgress(){
+  // reinicia tiempos y deja el reto 1 disponible
+  try{
+    localStorage.removeItem(KEY_T0);
+    localStorage.removeItem(KEY_T1);
+    localStorage.setItem(KEY_PROG,JSON.stringify({max:0}));
+  }catch(e){}
+})();
+
+/* ===== Retos ===== */
+const CHALLS=[
+{id:0,title:"RETO 1 - Bienvenida",points:100,
+html:`<img src="Logo_CIBERLIGA.png" class="modal-logo" alt="Logo Ciberliga">
+<div class="desc">
+  <p><strong>Bienvenido</strong> al primer “escape room” en ciberseguridad que te ayudará a prepararte para la Ciberliga.</p>
+  <p>En esta ocasión deberás resolver 5 acertijos. ¿Estás preparado?</p>
+  <p><strong>ESCENARIO DEL JUEGO</strong></p>
+  <p>Tu objetivo consiste en rastrear a un delincuente cibernético conocido en la darkweb como <strong>KERRY GONZALES <span class="hidden-flag">MILOS</span></strong>.</p>
+  <p><strong>DETALLES DEL RETO</strong></p>
+  <p>¿Estás listo? En este mismo texto está su segundo apellido, que será la <strong>clave</strong> para continuar.</p>
+</div>`,expected:"milos",norm:"lower"},
+{id:1,title:"RETO 2 - El viaje de Milos",points:200,
+html:`<img src="Reto_2_billete de avion.jpeg" class="screenshot" alt="Billete de avión" onclick="openLightbox(this.src)">
+<div class="desc">
+  <p>Has descubierto el apellido oculto: <strong>MILOS</strong>. Los analistas han interceptado una imagen sospechosa: un billete de avión encontrado en uno de sus servidores.</p>
+  <p>Analiza los <strong>metadatos</strong> de la imagen y averigua desde dónde se generó.</p>
+  <p>📸 Las coordenadas te llevarán a una ciudad, y el <strong>país</strong> de esa ciudad será la bandera.</p>
+</div>`,expected:"colombia",norm:"lower"},
+{id:2,title:"RETO 3 - La pista en Madrid",points:300,
+html:`<img src="Foto reto 3.1.jpeg" class="screenshot" alt="Pista 2.1" onclick="openLightbox(this.src)">
+<img src="Foto reto 3.2.jpeg" class="screenshot" alt="Pista 2.2" onclick="openLightbox(this.src)">
+<div class="desc">
+  <p>Has localizado al sospechoso en <strong>Colombia</strong>, pero parece que ahora se encuentra en Europa.</p>
+  <p>Todo apunta a que se esconde en una embajada. Observa bien las imágenes y determina <strong>dónde están tomadas</strong>.</p>
+  <p>💡 Pista: Es un paseo de Madrid, y allí se encuentra la <strong>Embajada de Colombia</strong>.</p>
+</div>`,expected:["paseo del general martinez campos","paseo general martinez campos","general martinez campos"],norm:"lower_space"},
+/* NUEVO: cuarto reto (id:3) */
+{id:3,title:"RETO 4 - Área restringida",points:400,
+html:`<img src="area_restringida_preview.jpeg" class="screenshot" alt="Área restringida">
+<div class="desc">
+  <p>Los investigadores han localizado en un ordenador que se encontraba en su coche cerca de la embajada de Colombia un papel con una dirección web que bajo la tienes, la página está protegida por Kerry con una contraseña, busca un fallo que haya tenido. En el enlace de abajo encontrarás esa dirección web. Si introduces la clave correcta allí, la página te dirá que la clave es correcta.</p>
+  <p>Vuelve entonces a este desafío e introduce la contraseña que obtuviste en la página restringida.</p>
+  <p><strong>Nota:</strong> la contraseña es numérica y no se muestra visualmente en la página restringida; debes inspeccionar la página para obtenerla.</p>
+  <p>🔗 <a href="area_restringida.html" target="_blank" rel="noopener">Área restringida</a> — abre en nueva pestaña (inspecciona el código para encontrar pistas).</p></div>`,expected:"9876",norm:"lower"}
+];
+
+/* ===== Funciones de progreso y tiempo ===== */
+function getProg(){return JSON.parse(localStorage.getItem(KEY_PROG)||'{"max":0}');}
+function setProg(n){localStorage.setItem(KEY_PROG,JSON.stringify({max:n}));}
+function now(){return Date.now();}
+function fmt(ms){const s=Math.floor(ms/1000);const h=String(Math.floor(s/3600)).padStart(2,'0');const m=String(Math.floor((s%3600)/60)).padStart(2,'0');const ss=String(s%60).padStart(2,'0');return h+":"+m+":"+ss;}
+function startClockIfNeeded(chId){if(chId===0&&!localStorage.getItem(KEY_T0)){localStorage.setItem(KEY_T0,String(now()));}}
+function stopClockIfFinal(chId){if(chId===CHALLS.length-1){localStorage.setItem(KEY_T1,String(now()));const t0=Number(localStorage.getItem(KEY_T0)||0);const t1=Number(localStorage.getItem(KEY_T1)||0);document.getElementById("finalTime").textContent=(t0>0&&t1>t0)?fmt(t1-t0):"--:--:--";openFinal();}}
+
+/* ===== Grid dinámico ===== */
+const grid=document.getElementById('grid');
+function renderGrid(){
+  const {max}=getProg();
+  grid.innerHTML="";
+  CHALLS.forEach(ch=>{
+    if(ch.id<=max){
+      const card=document.createElement('button');
+      card.className='card';
+      card.type='button';
+      card.innerHTML=`<div class="title">${ch.title}</div><div class="points">${ch.points}</div>`;
+      card.addEventListener('click',()=>openCh(ch.id));
+      grid.appendChild(card);
+    }
+  });
+  if(grid.children.length===0){
+    // si no hay nada visible (arranque), mostrar el primero
+    const first=document.createElement('button');
+    first.className='card';
+    first.type='button';
+    first.innerHTML=`<div class="title">${CHALLS[0].title}</div><div class="points">${CHALLS[0].points}</div>`;
+    first.addEventListener('click',()=>openCh(0));
+    grid.appendChild(first);
+  }
+}
+renderGrid();
+
+/* ===== Modal de reto ===== */
+const modal=document.getElementById('modal');
+const chBody=document.getElementById('ch-body');
+function openCh(id){
+  const ch=CHALLS.find(c=>c.id===id);
+  chBody.innerHTML=`
+    <div class="hero-rt"><h2>${ch.title}</h2><div class="pts">${ch.points}</div></div>
+    ${ch.html}
+    <div class="field">
+      <label>Bandera</label>
+      <input id="flagInput" autocomplete="off" placeholder="Introduce la bandera">
+      <div class="actions">
+        <button class="btn primary" id="sendBtn">Enviar</button>
+        <button class="btn ghost" onclick="closeModal()">Cerrar</button>
+        <span id="msg" class="msg"></span>
+      </div>
+    </div>`;
+  modal.classList.add('open');
+  const input=document.getElementById('flagInput');
+  const send=()=>submitFlag(id);
+  document.getElementById('sendBtn').onclick=send;
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();send();}});
+  setTimeout(()=>input.focus(),60);
+}
+function closeModal(){modal.classList.remove('open');}
+
+/* ===== Lightbox ===== */
+const lightbox=document.getElementById('lightbox');
+const lightboxImg=document.getElementById('lightboxImg');
+function openLightbox(src){lightboxImg.src=src;lightbox.classList.add('open');}
+function closeLightbox(){lightbox.classList.remove('open');}
+
+/* ===== Modal final ===== */
+const finalModal=document.getElementById('finalModal');
+const btnOK=document.getElementById('btnOK');
+const btnRestart=document.getElementById('btnRestart');
+function openFinal(){finalModal.classList.add('open');}
+function hideFinal(){finalModal.classList.remove('open');}
+function resetProgress(){localStorage.removeItem(KEY_T0);localStorage.removeItem(KEY_T1);setProg(0);renderGrid();}
+function closeFinal(){hideFinal();resetProgress();}
+btnOK.onclick=closeFinal;btnRestart.onclick=closeFinal;
+
+/* ===== Validación ===== */
+function normalize(kind,v){
+  v=(v||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  if(kind==="lower_space") v=v.replace(/_/g,' ').replace(/\s+/g,' ');
+  return v;
+}
+function submitFlag(id){
+  const ch=CHALLS.find(c=>c.id===id);
+  const input=document.getElementById('flagInput');
+  const user=normalize(ch.norm,input.value);
+  const exp=ch.expected;
+  const msg=document.getElementById('msg');
+  let ok=false;
+  if(Array.isArray(exp)){
+    ok=exp.some(e=>normalize(ch.norm,e)===user);
+  }else{
+    ok=(normalize(ch.norm,exp)===user);
+  }
+  if(ok){
+    msg.textContent="Correcto ✅";msg.classList.remove('err');msg.classList.add('ok');
+    startClockIfNeeded(id);
+    const p=getProg();
+    if(p.max<id+1) setProg(id+1);
+    stopClockIfFinal(id);
+    setTimeout(()=>{closeModal();renderGrid();},600);
+  }else{
+    msg.textContent="Incorrecto ❌";msg.classList.remove('ok');msg.classList.add('err');
+  }
+}
+
+/* ===== Tecla ESC ===== */
+window.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if(lightbox.classList.contains('open')) closeLightbox();
+    else if(finalModal.classList.contains('open')) closeFinal();
+    else closeModal();
+  }
+});
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
+</script>
+</body>
+</html>
