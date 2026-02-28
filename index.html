@@ -3,347 +3,236 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Acceso Restringido - VII CiberLiga</title>
+<title>Portal de Acceso - CiberLiga</title>
+<meta name="theme-color" content="#0f6d5a">
 <style>
-:root {
-  --bg-dark: #050a14;
-  --bg-panel: #0f1c2e;
-  --text-main: #e6f1ff;
-  --text-muted: #8892b0;
-  
-  /* Colores de Estado */
-  --neon-green: #00ff9d; /* Fácil / Acceso */
-  --neon-orange: #ffb86c; /* Medio */
-  --neon-red: #ff5555;    /* Difícil / Error */
-  --border: #1e3a5f;
+:root{
+  --green:#0f6d5a;
+  --dark-green:#0b3f36;
+  --accent:#00A651;
+  --bg-light:#f8fffd;
+  --text:#0b1e20;
+  --text-muted:#6b7a78;
 }
 
-* { box-sizing: border-box; }
+/* Reset y Base */
+*{box-sizing:border-box}
+html,body{
+  margin:0; padding:0; height:100%;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg-light);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+}
 
+/* Fondo decorativo */
 body {
-  margin: 0; padding: 0;
-  font-family: 'Courier New', Courier, monospace;
-  background-color: var(--bg-dark);
-  color: var(--text-main);
-  height: 100vh;
-  overflow-x: hidden;
+  background: 
+    radial-gradient(1000px 1000px at 10% -10%, #0db37f15, transparent),
+    radial-gradient(1000px 1000px at 90% 90%, #0db37f15, transparent),
+    linear-gradient(180deg, #f0fdfa, #ffffff);
 }
 
-/* --- PANTALLA DE LOGIN --- */
-#login-screen {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: var(--bg-dark);
-  z-index: 9999;
+/* Contenedor Principal */
+.container {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-image: radial-gradient(circle at 50% 50%, #112240 0%, #050a14 100%);
-}
-
-.login-box {
-  border: 1px solid var(--neon-green);
-  padding: 40px;
-  background: rgba(10, 25, 47, 0.95);
-  box-shadow: 0 0 20px rgba(0, 255, 157, 0.1);
-  text-align: center;
-  width: 90%;
-  max-width: 400px;
-  border-radius: 4px;
-}
-
-.login-title {
-  color: var(--neon-green);
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  border-bottom: 1px dashed var(--neon-green);
-  padding-bottom: 10px;
-}
-
-.input-group { margin-bottom: 20px; }
-
-input[type="password"] {
-  width: 100%;
-  padding: 12px;
-  background: #020c1b;
-  border: 1px solid #233554;
-  color: var(--neon-green);
-  font-family: inherit;
-  font-size: 1.1rem;
-  outline: none;
-  text-align: center;
-}
-
-input[type="password"]:focus {
-  border-color: var(--neon-green);
-  box-shadow: 0 0 10px rgba(0, 255, 157, 0.2);
-}
-
-.btn-login {
-  background: transparent;
-  color: var(--neon-green);
-  border: 1px solid var(--neon-green);
-  padding: 10px 30px;
-  font-size: 1rem;
-  font-family: inherit;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s;
-  text-transform: uppercase;
-}
-
-.btn-login:hover {
-  background: rgba(0, 255, 157, 0.1);
-  box-shadow: 0 0 15px rgba(0, 255, 157, 0.4);
-}
-
-#error-msg {
-  color: var(--neon-red);
-  margin-top: 15px;
-  font-size: 0.9rem;
-  min-height: 1.2em;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-/* --- INTERFAZ PRINCIPAL --- */
-#main-interface {
-  display: none; /* Oculto por defecto */
-  min-height: 100vh;
-  flex-direction: column;
-  opacity: 0;
-  transition: opacity 1s ease-in;
-}
-
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
   padding: 40px 20px;
-  flex: 1;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-/* Logos y Cabecera */
-.header-ops {
-  text-align: center;
-  margin-bottom: 50px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 30px;
-}
-
-.logos-cluster {
+/* Logos Header - Corregido centrado y estilo */
+.logos-area {
   display: flex;
-  justify-content: center;
-  gap: 25px;
-  margin-bottom: 30px;
-  filter: drop-shadow(0 0 5px rgba(255,255,255,0.1));
+  gap: 15px;
+  margin-bottom: 25px;
+  justify-content: center; /* Centrado horizontal */
+  align-items: center;
+  flex-wrap: wrap;
 }
-.badge-img { width: 60px; height: 60px; object-fit: contain; }
+.badge {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  /* Fondo oscuro como en tus archivos originales para que los logos resalten */
+  background: #0b112b; 
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  display: flex; /* Flex para centrar la imagen dentro del círculo */
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.badge img {
+  width: 60px; height: 60px;
+  object-fit: contain;
+  display: block;
+}
 
-h1 { color: var(--text-main); margin: 0; text-transform: uppercase; letter-spacing: 2px; }
-.subtitle { color: var(--text-muted); margin-top: 10px; max-width: 600px; margin-left: auto; margin-right: auto; }
+/* Textos Cabecera */
+.header-text { text-align: center; margin-bottom: 40px; max-width: 700px; }
+.header-text h1 {
+  margin: 0 0 15px 0;
+  font-size: clamp(26px, 5vw, 38px);
+  color: var(--dark-green);
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+.welcome-msg {
+  font-size: 18px;
+  color: #1f5b51;
+  line-height: 1.6;
+  margin: 0;
+}
 
-/* Grid de Tarjetas */
+/* Grid de Opciones */
 .options-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 25px;
+  width: 100%;
 }
 
-.mission-card {
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 25px;
+/* Tarjetas */
+.option-card {
   text-decoration: none;
-  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  background: #ffffff;
+  border: 1px solid #e3ecea;
+  border-radius: 16px;
+  padding: 35px 25px;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
   position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
-
-.mission-card:hover {
-  transform: translateY(-5px);
-  border-color: var(--text-muted);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+.option-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(15, 109, 90, 0.15);
+  border-color: var(--accent);
 }
-
-/* Etiquetas de Dificultad */
-.difficulty-badge {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  font-size: 0.75rem;
-  font-weight: bold;
-  padding: 4px 8px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+.option-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+  background: var(--green); transition: 0.3s;
 }
+.option-card:hover::before { background: var(--accent); height: 7px; }
 
-.diff-easy { color: #000; background: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
-.diff-med  { color: #000; background: var(--neon-orange); box-shadow: 0 0 10px var(--neon-orange); }
-.diff-hard { color: #fff; background: var(--neon-red);    box-shadow: 0 0 10px var(--neon-red); }
+/* Icono y texto tarjeta */
+.icon-box {
+  width: 55px; height: 55px;
+  background: #f2fbf9;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 15px; font-size: 26px;
+}
+.option-title { font-size: 20px; font-weight: 800; color: var(--dark-green); margin-bottom: 10px; }
+.option-desc { color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
+.btn-fake {
+  background: var(--green); color: white; padding: 10px 20px;
+  border-radius: 8px; font-weight: 700; font-size: 14px;
+}
+.option-card:hover .btn-fake { background: var(--accent); }
 
-.icon { font-size: 2.5rem; margin-bottom: 15px; }
-.card-title { color: var(--text-main); font-size: 1.2rem; margin: 0 0 10px 0; font-weight: bold; }
-.card-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px; flex-grow: 1; }
-
-.btn-action {
+/* Footer / Aviso Legal */
+.legal-footer {
+  margin-top: auto; /* Empuja el footer al fondo si sobra espacio */
+  padding: 30px 20px;
   text-align: center;
-  padding: 10px;
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  text-transform: uppercase;
-  font-weight: bold;
-  font-size: 0.9rem;
-  transition: 0.3s;
+  border-top: 1px solid #eef5f4;
+  background: #fff;
+  width: 100%;
 }
-.mission-card:hover .btn-action {
-  background: var(--text-main);
-  color: var(--bg-dark);
-}
-
-footer {
-  text-align: center;
-  padding: 20px;
-  border-top: 1px solid var(--border);
+.legal-text {
   color: var(--text-muted);
-  font-size: 0.8rem;
-  margin-top: 40px;
+  font-size: 13px;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
 }
 </style>
 </head>
 <body>
 
-  <div id="login-screen">
-    <div class="login-box">
-      <div class="login-title">🔐ACCESO RESTRINGIDO🔐</div>
-      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
-        Introduzca sus credenciales de agente para desbloquear el portal.
+  <div class="container">
+    
+    <div class="logos-area">
+      <div class="badge"><img src="Logo CLM.png" alt="GC"></div>
+      <div class="badge"><img src="Logo GC.png" alt="CLM"></div>
+      <div class="badge"><img src="Logo_CIBERLIGA.png" alt="CiberLiga"></div>
+    </div>
+
+    <div class="header-text">
+      <h1>Portal de la Ciberliga en Ciudad Real</h1>
+      <div class="welcome-msg">
+        <p><strong>Bienvenido a la plataforma de retos formativos en ciberseguridad para los Centros Educativos en Ciudad Real.</strong><br>
+        Avanza de manera progresiva, analiza cada escenario y disfruta del aprendizaje.</p>
+      </div>
+    </div>
+
+    <div class="options-grid">
+      
+      <a href="index1.html" class="option-card">
+        <div class="icon-box">🛡️</div>
+        <div class="option-title">Entrenamiento OSINT<br>Primeros pasos</div>
+        <div class="option-desc">
+          Con estos retos y desafíos en ciberseguridad iras aprendiendo las herramientas e investigación OSINT.
+        </div>
+        <div class="btn-fake">Acceder</div>
+      </a>
+
+      <a href="index2.html" class="option-card">
+        <div class="icon-box">🛡️</div>
+        <div class="option-title">Fase Clasificatoria<br>VI Ciberliga</div>
+        <div class="option-desc">
+          Competición de la fase Clasificatoria de la VI Ciberliga 2025. Retos y desafíos en ciberseguridad.
+        </div>
+        <div class="btn-fake">Acceder</div>
+      </a>
+
+      <a href="index3.html" class="option-card">
+        <div class="icon-box">🏆</div>
+        <div class="option-title">Fase final<br>VI Ciberliga</div>
+        <div class="option-desc">
+          Competición fase final  VI Ciberliga 2025. Herramientas OSINT e investigación digital.
+        </div>
+        <div class="btn-fake">Acceder</div>
+      </a>
+
+      <a href="index.html" class="option-card">
+        <div class="icon-box">🛡️</div>
+        <div class="option-title">Fase Clasificatoria<br>VII Ciberliga</div>
+        <div class="option-desc">
+          Competición de la fase Clasificatoria de la VII Ciberliga 2026. Análisis forense avanzado y geolocalización.
+        </div>
+        <div class="btn-fake">Restringido</div>
+      </a>
+
+    </div>
+  </div>
+
+  <footer class="legal-footer">
+    <div class="legal-text">
+      <p>
+        Entorno formativo y divulgativo.<br>
+        No se recogen datos personales.<br>
+        Uso exclusivo para actividades formativas en Ciberseguridad.
       </p>
-      <div class="input-group">
-        <input type="password" id="passInput" placeholder="INTRODUZCA SU CLAVE" onkeyup="if(event.key === 'Enter') checkAccess()">
-      </div>
-      <button class="btn-login" onclick="checkAccess()">Identificarse</button>
-      <div id="error-msg">⚠️ ACCESO NO AUTORIZADO</div>
-    </div>
-  </div>
-
-  <div id="main-interface">
-    <div class="container">
-      
-      <div class="header-ops">
-        <div class="logos-cluster">
-          <img src="Logo GC.png" alt="GC" class="badge-img">
-          <img src="Logo CLM.png" alt="CLM" class="badge-img">
-          <img src="Logo_CIBERLIGA.png" alt="CiberLiga" class="badge-img">
-        </div>
-        <h1>Portal de Retos -  Fase Clasificatoria VIII Ciberliga</h1>
-        <div class="subtitle">
-          Plataforma de acceso a retos y desafíos en ciberseguridad. Provincia de Ciudad Real.
-        </div>
-      </div>
-
-      <div class="options-grid">
-        
-        <a href="index1.html" class="mission-card">
-          <span class="difficulty-badge diff-easy">Fácil</span>
-          <div class="icon">🛡️</div>
-          <div class="card-title">Retos CR VIII</div>
-          <div class="card-desc">
-	  <strong style="color:var(--neon-green)">PARA NOVATOS.</strong>
-            Entrenamiento inicial. Empieza por aquí para familiarizarte con los desafíos CTP (capture the flag), tus primeros pasos en OSINT.
-          </div>
-          <div class="btn-action">Acceder</div>
-        </a>
-
-        <a href="index2.html" class="mission-card">
-          <span class="difficulty-badge diff-med">Medio</span>
-          <div class="icon">⚠️</div>
-          <div class="card-title">VI Ciberliga Fase Clasificatoria</div>
-          <div class="card-desc">
-            Fase clasificatoria de la edición del año 2025. OSINT, metadatos, forense, etc.
-          </div>
-          <div class="btn-action">Acceder</div>
-        </a>
-
-        <a href="index3.html" class="mission-card">
-          <span class="difficulty-badge diff-hard">Difícil</span>
-          <div class="icon">🏆</div>
-          <div class="card-title">VI Ciberliga Fase Final</div>
-          <div class="card-desc">
-            Fase final de la edición del año 2025. Escenario complejo. Herramientas avanzadas de OSINT e investigación digital.
-          </div>
-          <div class="btn-action">Acceder</div>
-        </a>
-
-        <a href="index4.html" class="mission-card" style="border-color: var(--neon-green);">
-          <span class="difficulty-badge diff-med">Medio</span>
-          <div class="icon">🕵️‍♂️</div>
-          <div class="card-title">VII Ciberliga Fase Clasificatoria</div>
-          <div class="card-desc">
-             Fase clasificatoria de la edición del año 2026. Forense avanzado y geolocalización.
-          </div>
-          <div class="btn-action" style="background: var(--neon-red); color: black;">Acceso No Autorizado</div>
-        </a>
-
+      <div style="margin-top:10px; opacity:0.6; font-size:12px">
+        &copy; CiberLiga • National CyberLeague
       </div>
     </div>
-
-    <footer>
-      Entorno formativo y divulgativo. No se recogen datos personales.<br>
-      &copy; CiberLiga • National CyberLeague
-    </footer>
-  </div>
-
-  <script>
-    // Hash SHA-256 de "viiiciberliga" precalculado
-    const TARGET_HASH = "84c535fb9d43fa4c15cebe96ac9b72c67187aae877be213172df0e6073fb87d1";
-
-    async function checkAccess() {
-      const input = document.getElementById('passInput').value;
-      const errorMsg = document.getElementById('error-msg');
-      
-      // Calculamos el hash del input
-      const hash = await sha256(input);
-
-      if (hash === TARGET_HASH) {
-        // Acceso Correcto
-        document.getElementById('login-screen').style.transition = 'opacity 0.5s';
-        document.getElementById('login-screen').style.opacity = '0';
-        
-        setTimeout(() => {
-          document.getElementById('login-screen').style.display = 'none';
-          const main = document.getElementById('main-interface');
-          main.style.display = 'flex';
-          // Pequeño timeout para permitir que el display:flex renderice antes de la opacidad
-          setTimeout(() => { main.style.opacity = '1'; }, 50);
-        }, 500);
-      } else {
-        // Error
-        errorMsg.style.opacity = '1';
-        document.getElementById('passInput').value = '';
-        document.getElementById('passInput').focus();
-        setTimeout(() => { errorMsg.style.opacity = '0'; }, 3000);
-      }
-    }
-
-    // Función auxiliar para calcular SHA-256 usando la API del navegador
-    async function sha256(message) {
-      // Codificar mensaje como array de bytes
-      const msgBuffer = new TextEncoder().encode(message);
-      // Hash del buffer
-      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-      // Convertir a array de bytes
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      // Convertir a string hex
-      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      return hashHex;
-    }
-  </script>
+  </footer>
 
 </body>
 </html>
