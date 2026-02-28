@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NCL - Escape Room Ciberliga VIII (Simulacro)</title>
+<meta name="theme-color" content="#0f6d5a">
+<style>
+:root{
+  --green:#0f6d5a;
+  --accent:#00A651;
+  --white:#ffffff;
+  --muted:#6b7a78;
+  --ink:#0b1e20;
+  --warning:#c79c00;
+  --danger:#b70022;
+}
+
+/* Reset */
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--white);color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Inter,Arial}
+
+/* Topbar (con HUD) */
+.topbar{background:var(--green);color:#fff;padding:10px 16px;position:sticky;top:0;z-index:40}
+.topbar .wrap{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.topbar h1{margin:0;font-size:18px;font-weight:800}
+.hud{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hud .chip{border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:6px 10px;font-weight:900;background:rgba(255,255,255,.12)}
+.hud .chip small{opacity:.9;font-weight:800}
+.hud .chip b{font-weight:900}
+.hud .btnTop{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;font-weight:900;cursor:pointer}
+.hud .btnTop:hover{background:rgba(255,255,255,.10)}
+
+/* Hero */
+.hero{
+  background: radial-gradient(1200px 400px at 10% -10%, #0db37f22, transparent),
+              radial-gradient(1200px 400px at 90% -10%, #0db37f22, transparent),
+              linear-gradient(180deg, #f8fffd, #ffffff);
+  border-bottom:1px solid #e6efed;
+}
+.hero-inner{max-width:1100px;margin:0 auto;padding:22px 16px}
+.hero-row{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.hero-logos{display:flex;gap:14px;align-items:center}
+.hero-logos .badge{
+  width:70px;height:70px;border-radius:50%;
+  display:grid;place-items:center;background:#0b112b;border:1px solid rgba(0,0,0,.08);overflow:hidden;
+  box-shadow:0 8px 20px rgba(0,0,0,.08)
+}
+.hero-logos .badge img{width:62px;height:62px;object-fit:contain}
+.hero-copy{flex:1 1 420px}
+.hero-title{font-size:36px;margin:0 0 6px 0;color:#0a3b33;font-weight:900}
+.hero-sub{margin:0;color:#1f5b51;line-height:1.45}
+.hero-line{height:2px;background:#dce9e6;border-radius:2px;margin-top:14px}
+
+/* Page */
+.page{max-width:1100px;margin:14px auto 22px auto;padding:0 16px}
+.h1{font-size:40px;margin:16px 0 4px 0}
+.section-title{color:var(--warning);font-weight:800;margin:10px 0 14px}
+.note{color:var(--muted);margin:0 0 8px 0;line-height:1.45}
+
+/* Grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;margin-top:6px}
+.card{
+  background:var(--green);color:#e9f7f4;border-radius:10px;padding:18px;text-align:left;
+  min-height:132px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;
+  border:1px solid rgba(255,255,255,.12);transition:transform .12s ease, box-shadow .12s ease;
+  box-shadow:0 2px 0 rgba(0,0,0,.06)
+}
+.card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.12)}
+.card .title{font-weight:900;line-height:1.25}
+.card .meta{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:12px}
+.card .points{opacity:.95;font-weight:900}
+.card .status{font-weight:900;background:rgba(255,255,255,.15);padding:6px 10px;border-radius:999px}
+.card.locked{opacity:.35;cursor:not-allowed}
+.card.locked:hover{transform:none;box-shadow:0 2px 0 rgba(0,0,0,.06)}
+
+/* Modal */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:16px;z-index:60}
+.modal.open{display:flex}
+.box{width:100%;max-width:920px;background:#fff;border-radius:14px;overflow:hidden;border:1px solid #e3ecea;box-shadow:0 24px 60px rgba(0,0,0,.28)}
+.box header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #eef3f2;background:linear-gradient(180deg,#fafdff,transparent)}
+.box header .pill{border:1px solid #cfe1de;border-radius:10px;padding:6px 10px;font-weight:800;color:#0b3f36;background:#f2fbf9}
+.box header button{padding:8px 12px;border-radius:10px;border:1px solid #dfe7e6;background:#fff;cursor:pointer}
+.box main{padding:0 18px 18px 18px;max-height:90vh;overflow:auto}
+
+/* Heading reto */
+.hero-rt{text-align:center;padding:18px 0 0}
+.hero-rt h2{margin:0;font-size:clamp(22px,4.6vw,34px);font-weight:900;color:#0b3f36}
+.hero-rt .pts{margin-top:6px;color:#1d4d44;font-weight:900}
+.hero-rt .pts small{font-weight:900;color:var(--muted)}
+
+/* Logo / screenshots */
+.modal-logo{display:block;margin:10px auto 14px auto;width:min(320px,70%);height:auto;object-fit:contain}
+.desc p{margin:0 0 10px;color:var(--ink);line-height:1.6}
+.desc ul{margin:0 0 10px 18px}
+.desc li{margin:4px 0}
+.desc a{color:#0b5bd3;font-weight:900}
+.screenshot{display:block;max-width:100%;max-height:300px;height:auto;border:1px solid #e7eceb;border-radius:8px;margin:12px auto;cursor:zoom-in}
+
+/* Texto oculto tipo “subrayar/seleccionar” */
+.hidden-flag{
+  color:#ffffff;          /* blanco */
+  background:#ffffff;     /* blanco */
+  user-select:text;
+}
+.hidden-flag::selection{
+  color:#000000;
+  background:#d3d3d3;
+}
+
+/* Pistas */
+.hints{margin:14px 0 8px 0;border:1px dashed #cfe1de;border-radius:12px;background:#f7fffd;padding:12px}
+.hints h3{margin:0 0 8px 0;font-size:15px;color:#0b3f36}
+.hintrow{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;margin:10px 0}
+.hintbtn{background:#fff;border:1px solid #dfe7e6;color:#0b3f36}
+.hintbtn:hover{background:#f8fbfb}
+.hinttext{display:none;border-left:4px solid var(--warning);padding:8px 10px;background:#fff;border-radius:10px;flex:1 1 360px;color:var(--ink);line-height:1.55}
+.hinttext.open{display:block}
+.hintmeta{color:var(--muted);font-weight:900}
+
+/* Input */
+.field{margin-top:12px}
+.field label{display:block;font-weight:800;margin:12px 0 6px}
+.field input{width:100%;padding:12px;border-radius:10px;border:1px solid #ccd8d6;background:#fbfdfc}
+.actions{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}
+.btn{padding:10px 14px;border-radius:10px;font-weight:900;border:none;cursor:pointer}
+.btn.primary{background:var(--accent);color:#042a20}
+.btn.ghost{background:#fff;border:1px solid #dfe7e6}
+.msg{min-height:22px;font-weight:900}
+.msg.ok{color:#0a7f66}
+.msg.err{color:var(--danger)}
+
+/* Final modal */
+.finalmodal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:80;padding:16px}
+.finalmodal.open{display:flex}
+.finalbox{max-width:620px;width:100%;background:#ffffff;border-radius:14px;border:1px solid #e2ecea;box-shadow:0 30px 70px rgba(0,0,0,.35);padding:18px 18px 22px}
+.finalbox h3{margin:6px 0 10px 0;font-size:26px;color:#0b3f36}
+.finalbox p{margin:0 0 8px 0;line-height:1.45}
+.finalbox .time{font-weight:900;color:#0a7f66}
+.finalbox .score{font-weight:900;color:#0b3f36}
+
+/* Lightbox */
+.lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.82);padding:16px;z-index:90}
+.lightbox.open{display:flex}
+.lightbox img{max-width:95vw;max-height:95vh;border-radius:12px;border:1px solid rgba(255,255,255,.18);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+</style>
+</head>
+<body>
+
+<!-- Topbar con contadores -->
+<div class="topbar">
+  <div class="wrap">
+    <h1>Simulacro de retos VIII Ciberliga</h1>
+    <div class="hud" aria-label="puntuacion">
+      <span class="chip"><small>Puntos</small> <b id="hudScore">0</b></span>
+      <span class="chip"><small>Pistas</small> <b id="hudHints">0</b></span>
+      <span class="chip"><small>Resueltos</small> <b id="hudSolved">0</b>/<b id="hudTotal">0</b></span>
+      <button class="btnTop" type="button" onclick="resetAll()">Reiniciar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-row">
+      <div class="hero-logos">
+        <span class="badge"><img src="Logo GC.png" alt="GC"></span>
+        <span class="badge"><img src="Logo CLM.png" alt="CLM"></span>
+        <span class="badge"><img src="Logo_CIBERLIGA.png" alt="CiberLiga"></span>
+      </div>
+      <div class="hero-copy">
+        <h2 class="hero-title">CiberLiga • National CyberLeague</h2>
+        <p class="hero-sub">
+          Resuelve cada desafío para desbloquear el siguiente.
+          Las <strong>pistas</strong> están ocultas y revelarlas conlleva una penalización de <strong>-25 puntos</strong> por pista utilizada.
+        </p>
+      </div>
+    </div>
+    <div class="hero-line"></div>
+  </div>
+</div>
+
+<!-- Page -->
+<div class="page">
+  <div class="h1">Desafíos</div>
+  <div class="section-title">VIII Ciberliga - Fase de entrenamiento</div>
+  <p class="note">
+    Con estos retos y desafios, te familiarizarás con la competición de la Ciberliga basada en capturar la bandera o CTF (capture the flag), utilizarás herramientas y fuentes OSINT. Introduce la <strong>bandera</strong> correcta en cada reto. Al completar uno, se desbloquea el siguiente. No necesitarás instalar nada, solo tu ordenador con tu navegador y astucia. Todos tus conocimientos previos serán de gran ayuda.
+  </p>
+  <div id="grid" class="grid"></div>
+</div>
+
+<!-- Modal reto -->
+<div id="modal" class="modal" aria-hidden="true">
+  <div class="box" role="dialog">
+    <header>
+      <div class="pill">Desafío</div>
+      <button class="btn ghost" onclick="closeModal()" aria-label="Cerrar">✕</button>
+    </header>
+    <main id="ch-body"></main>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+  <img id="lightboxImg"
+       src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+       alt="">
+</div>
+
+<!-- Modal final -->
+<div id="finalModal" class="finalmodal" aria-hidden="true">
+  <div class="finalbox">
+    <h3>Enhorabuena</h3>
+    <p>Has completado todos los retos.</p>
+    <p>⏱️ Tiempo total: <span id="finalTime" class="time">--:--:--</span></p>
+    <p>🏁 Puntuación final: <span id="finalScore" class="score">0</span></p>
+    <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn primary" id="btnOK">Aceptar</button>
+      <button class="btn ghost" id="btnRestart">Volver a empezar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   CONFIG / CLAVES (persistente)
+   ========================================================= */
+const KEY_PROG  = "ncl_viii_simulacro_progress_v1";
+const KEY_SOLVED= "ncl_viii_simulacro_solved_v1";
+const KEY_HINTS = "ncl_viii_simulacro_hints_v1";
+const KEY_T0    = "ncl_viii_simulacro_time_start_v1";
+const KEY_T1    = "ncl_viii_simulacro_time_end_v1";
+
+const HINT_COST = 25;
+
+/* =========================================================
+   UTILIDADES
+   ========================================================= */
+function nText(v){
+  return (v||"")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[“”\"']/g, "")
+    .replace(/\.+$/g, "")
+    .replace(/\s+/g, " ");
+}
+
+/* Misma normalización pedida: lower / lower_space */
+function normalizeValue(kind, v){
+  let x = nText(v);
+  if(kind === "lower_space"){
+    x = x.replace(/_/g, " ").replace(/\s+/g, " ");
+  }
+  return x;
+}
+
+/* SHA-256 (WebCrypto si está disponible; fallback JS puro para file://) */
+async function sha256Hex(text){
+  if(window.crypto && crypto.subtle){
+    const data = new TextEncoder().encode(text);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  // Fallback SHA-256 (JS puro)
+  function rotr(n, x){ return (x >>> n) | (x << (32 - n)); }
+  function ch(x,y,z){ return (x & y) ^ (~x & z); }
+  function maj(x,y,z){ return (x & y) ^ (x & z) ^ (y & z); }
+  function sig0(x){ return rotr(2,x) ^ rotr(13,x) ^ rotr(22,x); }
+  function sig1(x){ return rotr(6,x) ^ rotr(11,x) ^ rotr(25,x); }
+  function gam0(x){ return rotr(7,x) ^ rotr(18,x) ^ (x >>> 3); }
+  function gam1(x){ return rotr(17,x) ^ rotr(19,x) ^ (x >>> 10); }
+
+  const K = new Uint32Array([
+    0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
+  ]);
+
+  let bytes;
+  if(window.TextEncoder){
+    bytes = new TextEncoder().encode(text);
+  }else{
+    const s = unescape(encodeURIComponent(text));
+    bytes = new Uint8Array(s.length);
+    for(let i=0;i<s.length;i++) bytes[i] = s.charCodeAt(i);
+  }
+
+  const bitLen = bytes.length * 8;
+  const withOne = bytes.length + 1;
+  const padLen = (withOne % 64 <= 56) ? (56 - (withOne % 64)) : (56 + 64 - (withOne % 64));
+  const totalLen = bytes.length + 1 + padLen + 8;
+  const msg = new Uint8Array(totalLen);
+  msg.set(bytes, 0);
+  msg[bytes.length] = 0x80;
+
+  const hi = Math.floor(bitLen / 0x100000000);
+  const lo = bitLen >>> 0;
+  msg[totalLen-8] = (hi >>> 24) & 0xff;
+  msg[totalLen-7] = (hi >>> 16) & 0xff;
+  msg[totalLen-6] = (hi >>> 8) & 0xff;
+  msg[totalLen-5] = hi & 0xff;
+  msg[totalLen-4] = (lo >>> 24) & 0xff;
+  msg[totalLen-3] = (lo >>> 16) & 0xff;
+  msg[totalLen-2] = (lo >>> 8) & 0xff;
+  msg[totalLen-1] = lo & 0xff;
+
+  let h0=0x6a09e667, h1=0xbb67ae85, h2=0x3c6ef372, h3=0xa54ff53a,
+      h4=0x510e527f, h5=0x9b05688c, h6=0x1f83d9ab, h7=0x5be0cd19;
+
+  const w = new Uint32Array(64);
+  for(let i=0;i<msg.length;i+=64){
+    for(let t=0;t<16;t++){
+      const j=i+t*4;
+      w[t] = ((msg[j]<<24) | (msg[j+1]<<16) | (msg[j+2]<<8) | (msg[j+3])) >>> 0;
+    }
+    for(let t=16;t<64;t++){
+      w[t] = (gam1(w[t-2]) + w[t-7] + gam0(w[t-15]) + w[t-16]) >>> 0;
+    }
+
+    let a=h0,b=h1,c=h2,d=h3,e=h4,f=h5,g=h6,h=h7;
+
+    for(let t=0;t<64;t++){
+      const T1 = (h + sig1(e) + ch(e,f,g) + K[t] + w[t]) >>> 0;
+      const T2 = (sig0(a) + maj(a,b,c)) >>> 0;
+      h = g; g = f; f = e; e = (d + T1) >>> 0;
+      d = c; c = b; b = a; a = (T1 + T2) >>> 0;
+    }
+
+    h0 = (h0 + a) >>> 0;
+    h1 = (h1 + b) >>> 0;
+    h2 = (h2 + c) >>> 0;
+    h3 = (h3 + d) >>> 0;
+    h4 = (h4 + e) >>> 0;
+    h5 = (h5 + f) >>> 0;
+    h6 = (h6 + g) >>> 0;
+    h7 = (h7 + h) >>> 0;
+  }
+
+  function toHex32(x){ return x.toString(16).padStart(8,'0'); }
+  return (toHex32(h0)+toHex32(h1)+toHex32(h2)+toHex32(h3)+toHex32(h4)+toHex32(h5)+toHex32(h6)+toHex32(h7));
+}
+
+function now(){ return Date.now(); }
+function fmt(ms){
+  const s=Math.floor(ms/1000);
+  const h=String(Math.floor(s/3600)).padStart(2,'0');
+  const m=String(Math.floor((s%3600)/60)).padStart(2,'0');
+  const ss=String(s%60).padStart(2,'0');
+  return `${h}:${m}:${ss}`;
+}
+
+/* =========================================================
+   RETOS + PISTAS
+   ========================================================= */
+const CHALLS = [
+  {
+    id:0,
+    title:"RETO 1 - Bienvenida",
+    points:100,
+    html: `
+      <img src="Logo_CIBERLIGA.png" class="modal-logo" alt="Logo Ciberliga">
+      <div class="desc">
+        <p><strong>¿Qué es un “Capture The Flag” (CTF)?</strong></p>
+        <p>Un CTF es una competición (o entrenamiento) de ciberseguridad donde resuelves pequeños retos o desafíos para encontrar una <strong>bandera</strong> (la “flag”). La bandera suele ser una palabra o frase que demuestra que has completado el reto o desafio.</p>
+
+        <p><strong>¿Cómo se resuelven?</strong></p>
+        <p>Normalmente combinan pistas técnicas y búsqueda de información. No hay una única forma: puedes usar el navegador, utilidades del sistema, y fuentes abiertas en internet. Es decir, investigación en fuentes o herramientas <strong><span class="hidden-flag">OSINT</span></strong>.</p>
+
+        <p><strong>Regla importante:</strong> no te hará falta instalar nada. Lee detenidamente, piensa, razona y prueba lo que haces.</p>
+
+        <p><strong>DETALLES DEL RETO</strong></p>
+        <p>Para continuar, introduce como bandera la palabra que está oculta en el texto y que es la abreviatura de "Open Source Intelligence".</p>
+      </div>
+    `,
+    hints: [
+      `SUBRAYA el texto si no encuentras la solución (bandera).`
+    ],
+    norm: "lower",
+    expectedHash: "607b00503c7e5203980e2f657b7493e52faaf49c99c42ec541f3b36ee1bd67da"
+  },
+
+  {
+    id:1,
+    title:"RETO 2 - ¿Qué es una IP?",
+    points:200,
+    html: `
+      <img src="Logo_CIBERLIGA.png" class="modal-logo" alt="Logo Ciberliga">
+      <div class="desc">
+        <p><strong>¿Qué es una IP?</strong></p>
+        <p>Una <strong>dirección IP</strong> es un número (por ejemplo, <code>191.121.121.1</code>) que identifica un equipo o servidor en internet. Igual que una dirección postal ayuda a encontrar una casa, la IP ayuda a encontrar un servidor.</p>
+
+        <p><strong>¿Qué información puede estar asociada a una IP?</strong></p>
+        <ul>
+          <li>La <strong>organización</strong> o proveedor (ISP/hosting) que gestiona esa IP.</li>
+          <li>El <strong>país</strong> o zona aproximada donde se anuncia.</li>
+          <li>Datos técnicos (rangos, ASN) y, a veces, contactos de abuso para reportar incidentes.</li>
+        </ul>
+
+        <p><strong>Reto</strong></p>
+        <p>Comprueba cuál es la IP del dominio <a href="https://www.albaladejo.es" target="_blank" rel="noopener"><strong>www.albaladejo.es</strong></a> y úsala como bandera.</p>
+
+        <ul>
+          <li>En <strong>Símbolo del sistema</strong>: usa el comando <code>ping</code>.</li>
+          <li>O una consulta a través de herramientas OSINT como <a href="https://whois.domaintools.com/" target="_blank" rel="noopener"><strong>WHOIS</strong></a>.</li>
+        </ul>
+
+        <p class="note">Nota: a veces un dominio puede usar balanceo/CDN. Contrasta con más de una fuente si el resultado no es el correcto.</p>
+        <p><strong>Bandera:</strong> la IP correcta del dominio <strong>www.albaladejo.es</strong>.</p>
+      </div>
+    `,
+    hints: [],
+    norm: "lower",
+    expectedHash: "419fafa2b97cdc45d67c2beb659ff69cbaf9424df8188f3e27dc993a6036fd77"
+  },
+
+  {
+    id:2,
+    title:"RETO 3 - Mas sobre las IP",
+    points:220,
+    html: `
+      <img src="Logo_CIBERLIGA.png" class="modal-logo" alt="Logo Ciberliga">
+      <div class="desc">
+        <p><strong>IP: un número que “identifica” en internet</strong></p>
+        <p>Una IP es una dirección numérica (por ejemplo, <code>131.3.121.124</code>) que permite que tu ordenador encuentre un servidor en internet. Los dominios (como <code>ejemplo.es</code>) son nombres fáciles para humanos, pero por debajo se traducen a una IP.</p>
+
+        <p><strong>¿Qué puedes averiguar con una IP?</strong></p>
+        <ul>
+          <li>Un <strong>teléfono de contacto</strong> relacionado.</li>
+          <li>Una fecha de creación del dominio.</li>
+          <li>Contactos de abuso o datos de red útiles para reportar incidentes.</li>
+        </ul>
+
+        <p><strong>Reto:</strong> averigua la IP del dominio <a href="https://www.almaden.es" target="_blank" rel="noopener"><strong>www.almaden.es</strong></a> y escríbela como bandera.</p>
+
+        <p><strong>Cómo consultarlo</strong></p>
+        
+	<ul>
+          <li>En <strong>Símbolo del sistema</strong>: usa el comando <code>ping</code>.</li>
+          <li>O una consulta a través de herramientas OSINT como <a href="https://whois.domaintools.com/" target="_blank" rel="noopener"><strong>WHOIS</strong></a>.</li>
+        </ul>
+
+      </div>
+    `,
+    hints: [
+      `Si <code>ping</code> devuelve una IP distinta a una consulta WHOIS, contrasta con al menos dos fuentes (WHOIS + ping).`
+    ],
+    norm: "lower",
+    expectedHash: "4f07e8111b15d6705aef04d02407755b9241e91a5fa93fac58d5f5c19a9e1724"
+  },
+
+  {
+    id:3,
+    title:"RETO 4 - Metadatos",
+    points:200,
+    html: `
+      <img src="Reto_2_billete de avion.jpeg" class="screenshot" alt="Billete de avión" onclick="openLightbox(this.src)">
+      <div class="desc">
+        <p><strong>¿Qué son los metadatos?</strong></p>
+        <p>Los <strong>metadatos</strong> son “datos sobre los datos”. Muchos archivos (fotos, documentos, PDFs) guardan información extra: fecha de creación, dispositivo o programa usado, autor, e incluso en algunos casos <strong>coordenadas GPS</strong>.</p>
+
+        <p><strong>¿Para qué sirven en investigación?</strong></p>
+        <ul>
+          <li>Para reconstruir una <strong>línea temporal</strong> (cuándo se creó o modificó un archivo).</li>
+          <li>Para saber con qué <strong>dispositivo o programa</strong> se generó.</li>
+          <li>Para ubicar dónde se tomó una foto (si hay GPS).</li>
+        </ul>
+
+        <p><strong>Herramientas OSINT</strong></p>
+        <p>Puedes verlos con el botón derecho → <strong>Propiedades</strong>, con programas de análisis de metadatos, o con herramientas online (sin instalar nada).</p>
+        <ul>
+          <li>Puedes usar <a href="https://www.metadata2go.com/es" target="_blank" rel="noopener"><strong>Metadata2go</strong></a>.</li>
+          <li>O también <a href="https://fotoforensics.com/" target="_blank" rel="noopener"><strong>Fotoforensics</strong></a>.</li>
+        </ul>
+
+        <p><strong>Misión:</strong> analiza los metadatos de la imagen. Las coordenadas te llevarán a una ciudad y el <strong>país</strong> de esa ciudad será la bandera.</p>
+      </div>
+    `,
+    hints: [],
+    norm: "lower",
+    expectedHash: "c91bd9c288c0a7c5ca1bb807cbd5d89c5ab33764862eb46808417733da2af873"
+  },
+
+  {
+    id:4,
+    title:"RETO 5 - Más sobre los metadatos",
+    points:250,
+    html: `
+      <img src="Reto_canon_metadatos.jpg" class="screenshot" alt="Reto metadatos Canon" onclick="openLightbox(this.src)">
+      <div class="desc">
+        <p><strong> Información “escondida” en los archivos</strong></p>
+        <p>Muchas fotos guardan datos técnicos llamados <strong>EXIF</strong>: modelo de cámara, fecha, ajustes, e incluso (a veces) ubicación. En investigación digital, esto ayuda a comprobar si un contenido es auténtico y a reconstruir el contexto.</p>
+
+        <p><strong>Cómo verlos</strong></p>
+        <ul>
+          <li>En Windows: botón derecho sobre la foto → <strong>Propiedades</strong> → pestaña <strong>Detalles</strong>.</li>
+          <li>Con herramientas OSINT online (sin instalar nada):
+            <a href="https://www.metadata2go.com/es" target="_blank" rel="noopener"><strong>Metadata2go</strong></a> y
+            <a href="https://fotoforensics.com/" target="_blank" rel="noopener"><strong>Fotoforensics</strong></a>.
+          </li>
+        </ul>
+
+        <p><strong>Misión:</strong> averigua la <strong>marca</strong> y el <strong>modelo</strong> de la cámara con la que se tomó la foto. Escribe la respuesta como bandera.</p>
+        <p class="note">Se aceptan <code>canon DF567</code> o <code>canondf567</code> (no importa mayúsculas/minúsculas).</p>
+      </div>
+    `,
+    hints: [
+      `En Windows, mira en <strong>Propiedades → Detalles</strong> y busca “<strong>Marca</strong>” o “<strong>Modelo de cámara</strong>”.`
+    ],
+    norm: "lower",
+    expectedHashes: [
+      "1172da051aa9520dae32e1da0befa8772b1b6a45e8f4fb80297d339b2ae2abad",
+      "1fa0752a5b8bbc41421fc78b091ae3ad6db586647f533c70e23cb73e8a414270"
+    ]
+  },
+
+  {
+    id:5,
+    title:"RETO 6 - Cripto: César",
+    points:300,
+    html: `
+      <img src="Logo_CIBERLIGA.png" class="modal-logo" alt="Logo Ciberliga">
+      <div class="desc">
+        <p><strong>Cifrado César</strong></p>
+        <p>El <strong>cifrado César</strong> es un método clásico que <strong>desplaza</strong> cada letra un número fijo de posiciones en el alfabeto. Se suele usar como primer paso para entender cifrados por sustitución.</p>
+
+        <p><strong>Mensaje cifrado:</strong></p>
+        <div style="background:#2b2b2b;border-radius:6px;padding:12px;margin:10px 0">
+          <div style="font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+                      color:#2fff71;font-weight:900;word-break:break-word">
+            WKH TXLFN EURZP IRA MXOSV RYHU WKH ÑDCB GRJ RI FDHVDU DPG BRXU XPLTXH VRÑXWLRP LV JOESRFJÑODUÑ
+          </div>
+        </div>
+
+        <p><strong>Enlaces útiles (puedes usar otros):</strong></p>
+        <ul>
+          <li><a href="https://eduescaperoom.com/cifrado-cesar/" target="_blank" rel="noopener"><strong>EduEscapeRoom</strong></a></li>
+          <li><a href="https://www.dcode.fr/cifrado-cesar" target="_blank" rel="noopener"><strong>dCode (César)</strong></a></li>
+          <li><a href="https://es.planetcalc.com/1434/" target="_blank" rel="noopener"><strong>PlanetCalc (César)</strong></a></li>
+        </ul>
+
+        <p><strong>Bandera:</strong> introduce la solución (solo la palabra final que ves en el mensaje cifrado).</p>
+      </div>
+    `,
+    hints: [
+      `Pista rápida: en muchos ejemplos de César, <code>WKH</code> suele ser <code>THE</code> (desplazamiento 3).`
+    ],
+    norm: "lower",
+    expectedHash: "437f2aaac3f76408c8f2d2ad530fbb4d3042f2c1fee2a082360b18af63521193"
+  },
+
+  {
+    id:6,
+    title:"RETO 7 - Codificación Base64",
+    points:250,
+    html: `
+      <img src="Logo_CIBERLIGA.png" class="modal-logo" alt="Logo Ciberliga">
+      <div class="desc">
+        <p><strong>¿Qué es la codificación Base64?</strong></p>
+        <p><strong>Base64</strong> es una forma de representar datos (texto, imágenes o archivos) usando solo letras, números y algunos símbolos. Se usa mucho para <strong>transportar información</strong> por internet o dentro de código, pero <strong>no es cifrado</strong>: cualquiera puede revertirlo.</p>
+
+        <p><strong>¿Para qué se usa?</strong></p>
+        <ul>
+          <li>Enviar datos binarios en entornos que solo aceptan texto.</li>
+          <li>Adjuntar pequeños fragmentos de información dentro de mensajes o páginas.</li>
+          <li>Ofuscación básica (solo para que “no se vea a simple vista”).</li>
+        </ul>
+
+        <p>Mensaje capturado (Base64):</p>
+
+        <div style="background:#2b2b2b;border-radius:6px;padding:12px;margin:10px 0">
+          <div style="font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+                      color:#2fff71;font-weight:900;word-break:break-all">
+            QXRhcXVlIGlubWluZW50ZQ==
+          </div>
+        </div>
+
+        <p><strong>Misión:</strong> decodifica el texto Base64 y escribe la frase resultante como bandera.</p>
+      </div>
+    `,
+    hints: [
+      `🛠 <strong>Herramientas sugeridas:</strong>
+       <ul>
+         <li><a href="https://www.base64decode.org/" target="_blank" rel="noopener">Base64Decode.org</a></li>
+         <li><a href="https://www.base64decode.net/" target="_blank" rel="noopener">Base64Decode.net</a></li>
+       </ul>`
+    ],
+    norm: "lower",
+    expectedHash: "8eff90fa52f12dcace9bfc587a8d5c95fe5f6fb039099e11ec5cc243bc987d52"
+  },
+
+  {
+    id:7,
+    title:"RETO 8 - Codificación ASCII",
+    points:250,
+    html: `
+      <img src="Logo_CIBERLIGA.png" class="modal-logo" alt="Logo Ciberliga">
+      <div class="desc">
+        <p><strong>ASCII (American Standard Code for Information Interchange)</strong></p>
+        <p>ASCII es un estándar que asigna un número a cada carácter (de 0 a 127). Así, una computadora puede representar letras, números y símbolos usando solo <strong>números</strong>. En ASCII clásico se usan <strong>7 bits</strong>, lo que permite 128 caracteres.</p>
+
+        <p><strong>Desafío</strong></p>
+        <p>Decodifica este mensaje en ASCII (valores separados por comas):</p>
+
+        <div style="background:#2b2b2b;border-radius:6px;padding:12px;margin:10px 0">
+          <div style="font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+                      color:#2fff71;font-weight:900;word-break:break-word">
+            84, 104, 101, 32, 115, 111, 108, 117, 116, 105, 111, 110, 32, 105, 115, 58, 32, 110, 99, 114, 99, 108, 103, 97, 111, 115, 97, 104, 104
+          </div>
+        </div>
+
+        <p>Herramienta recomendada:</p>
+        <ul>
+          <li><a href="https://es.rakko.tools/tools/76/" target="_blank" rel="noopener"><strong>RakkoTools (ASCII)</strong></a></li>
+        </ul>
+
+        <p><strong>Bandera:</strong> escribe el resultado final (solo la parte que va después de <code>The solution is:</code>).</p>
+      </div>
+    `,
+    hints: [
+      `Si te sale una frase en inglés, la bandera es la última palabra (sin espacios).`
+    ],
+    norm: "lower",
+    expectedHash: "0c06ab98fa0dda408ea4a4f86547cd346ae8a0979f9026e5e83d8eb78477c0cb"
+  },
+
+  {
+    id:8,
+    title:"RETO 9 - Comenzando con Google dorks",
+    points:300,
+    html: `
+      <img src="Foto reto 3.1.jpeg" class="screenshot" alt="Pista" onclick="openLightbox(this.src)">
+      <img src="Foto reto 3.2.jpeg" class="screenshot" alt="Pista" onclick="openLightbox(this.src)">
+      <div class="desc">
+        <p><strong>Buscar en internet también es una técnica</strong></p>
+        <p>Los Google Dorks (o Google Hacking) son comandos de búsqueda avanzada que utilizan operadores especiales para encontrar información expuesta en internet que no es visible con una búsqueda normal. Se utilizan comúnmente en ciberseguridad, pruebas de penetración (pentesting) y OSINT para identificar vulnerabilidades o fugas de datos.</p>
+        <p><strong>Operadores útiles (ejemplos):</strong></p>
+        <ul>
+          <li><code>related:</code> Buscar sitios relacionados (ej.: <code>related:wikipedia.org</code>)</li>
+          <li><code>intext:</code> Buscar en el texto del sitio web solamente (ej.: <code>intext:wiki</code>)</li>
+          <li><code>or:</code> Combinar dos palabras</li>
+          <li><code>imagesize:</code> Búsqueda de imágenes por tamaño</li>
+                </ul>
+</p>
+        <p><strong>Misión:</strong> observa bien las imágenes y determina <strong>dónde están tomadas</strong>. Escribe la ubicación (calle, avenida, paseo, etc.) como bandera. En este reto aún no te harán falta estos comandos (Google dorks)</p>
+      </div>
+    `,
+    hints: [
+      `💡 Pista: Es un paseo de Madrid, y allí se encuentra la <strong>Embajada de Colombia</strong>.`
+    ],
+    norm: "lower_space",
+    expectedHashes: [
+      "37986d1afee7e781b0e56f17b83a7935682b872500d50ef468a70774bf349f29",
+      "aa23c00a98eaa290cf384e081b36f9437dddaa0fa80dce11a4b87ad44fb81005",
+      "3937a8a8678b923b3931b8bfff70d02924e56b12e9228b2d788ba1649c5090c5"
+    ]
+  },
+
+  {
+    id:9,
+    title:"RETO 10 - Google dorks a fondo",
+    points:350,
+    html: `
+      <img src="Logo_CIBERLIGA.png" class="modal-logo" alt="Logo Ciberliga">
+      <div class="desc">
+        <p><strong>Google Dorks (búsqueda avanzada)</strong></p>
+        <p>Los <strong>dorks</strong> son comandos que ayudan a afinar búsquedas para encontrar información concreta. En ciberseguridad y OSINT se usan para localizar documentos, páginas indexadas por error o contenidos que “no deberían” ser tan fáciles de encontrar.</p>
+
+        <p><strong>Operadores útiles (ejemplos):</strong></p>
+        <ul>
+          <li><code>site:</code> limita a un dominio (ej.: <code>site:ejemplo.com</code>)</li>
+          <li><code>filetype:</code> filtra por tipo (ej.: <code>filetype:pdf</code>)</li>
+          <li><code>intitle:</code> busca en el título</li>
+          <li><code>inurl:</code> busca en la URL</li>
+          <li><code>cache:</code> muestra versión cacheada</li>
+        </ul>
+
+        <p><strong>Misión:</strong> usa dorks para localizar el <strong>PDF</strong> que contiene el dato del <strong>cuarto clasificado</strong> de la “RESULTADOS FASE FINAL IV NATIONAL CIBERLEAGUE” (modalidad amateur). La bandera es el <strong>nombre</strong> (3 letras).</p>
+
+        <p>Web de interés: <a href="https://www.nationalcyberleague.es" target="_blank" rel="noopener"><strong>nationalcyberleague.es</strong></a></p>
+
+        <p><strong>Búsquedas</strong> (combínalas):</p>
+        <ul>
+          <li><code>Usa varios dorks para llegar a la bandera</code></li>
+                  </ul>
+      </div>
+    `,
+    hints: [
+      `Prueba con: <code>site:nationalcyberleague.es "FASE FINAL" filetype:pdf</code> y revisa los PDF's de resultados.`
+    ],
+    norm: "lower",
+    expectedHash: "caac88c7a17ae40fb441d8706b2bf109f22e60ac20cf9855123075f0a0f5262c"
+  },
+
+  {
+    id:10,
+    title:"RETO 11 - ¿Qué es un código fuente?",
+    points:400,
+    html: `
+      <img src="area_restringida_preview.jpeg" class="screenshot" alt="Área restringida">
+      <div class="desc">
+        <p><strong>¿Qué es el código fuente de una web?</strong></p>
+        <p>El <strong>código fuente</strong> es el conjunto de instrucciones (HTML, CSS y JavaScript) que el navegador descarga para mostrar una página. Muchas veces contiene pistas: comentarios, rutas, nombres de variables, enlaces ocultos o datos que no se ven en pantalla.</p>
+
+        <p><strong>¿Cómo se ve?</strong></p>
+        <ul>
+          <li>Con botón derecho → <strong>Ver código fuente</strong>.</li>
+          <li>O con <strong>Inspeccionar</strong> (herramientas del desarrollador) para ver el HTML y los scripts.</li>
+        </ul>
+
+        <p><strong>Ejercicio práctico</strong></p>
+        <p>La página del enlace está protegida por contraseña. A veces la clave no se muestra visualmente, pero puede estar en el código fuente (un error típico).</p>
+
+        <p>🔗 <a href="area_restringida.html" target="_blank" rel="noopener">Área restringida</a> — abre esta nueva pestaña y mira su código fuente.</p>
+
+        <p><strong>Bandera:</strong> Descubre la contraseña en el código fuente y escríbela aquí.</p>
+      </div>
+    `,
+    hints: [],
+    norm: "lower",
+    expectedHash: "dbff5341acad5e2a58db4efd5e72e2d9a0a843a28e02b1183c68162d0a3a3de6"
+  },
+
+  {
+    id:11,
+    title:"RETO 12 - Archive",
+    points:300,
+    html: `
+      <img src="Logo_CIBERLIGA.png" class="modal-logo" alt="Logo Ciberliga">
+      <div class="desc">
+        <p><strong>Archive.org (Wayback Machine)</strong></p>
+        <p>Hay una web muy conocida llamada <a href="https://www.archive.org" target="_blank" rel="noopener"><strong>archive.org</strong></a> que guarda “capturas” de cómo eran las páginas web en diferentes fechas (como una máquina del tiempo).</p>
+
+        <p><strong>¿Para qué sirve en ciberseguridad?</strong></p>
+        <ul>
+          <li>Ver <strong>cambios</strong> en una web (contenido, textos, apartados que aparecen y desaparecen).</li>
+          <li>Comprobar si una web “nueva” es sospechosa (por ejemplo, si antes no existía o ha cambiado de forma rara).</li>
+          <li>Ayuda a detectar <strong>páginas fraudulentas</strong> o campañas de suplantación, comparando versiones antiguas.</li>
+        </ul>
+
+        <p><strong>Misión:</strong> Mira los cambios que ha tenido <a href="https://www.nationalcyberleague.es" target="_blank" rel="noopener"><strong>nationalcyberleague</strong></a>, encuentra la <strong>fecha</strong> en la que aparece por primera vez el vídeo:</p>
+        <p><em>“V Ciberliga. Explicación de los retos Pre Amateur por Antonio Fernández Basilio”</em></p>
+
+        <p><strong>Bandera:</strong> escribe la fecha. Se aceptan estos formatos: <code>01/01/2000</code>, <code>01-01-2000</code> o <code>01012000</code>.</p>
+      </div>
+    `,
+    hints: [
+      `Busca la página donde esté el vídeo y usa la Wayback Machine para ver la primera captura disponible (la más antigua).`
+    ],
+    norm: "lower",
+    expectedHashes: [
+      "8e41987ec1afee0589dce8690fe480c1e39c0c1e223a2316399bb7a0a0a9a6bf",
+      "628b0d77a73a7d4489e1cd48ea25cdd0ccdaa0e3cc1915201a179644ef3b3bc0",
+      "9680cc186693697cf0258ffa93d310f3bbc722a9f9cfabb3ce57b19816be792a"
+    ]
+  }
+];
+
+/* =========================================================
+   STORAGE HELPERS
+   ========================================================= */
+function getProg(){
+  try{ return JSON.parse(localStorage.getItem(KEY_PROG)||'{"max":0}'); }
+  catch(e){ return {max:0}; }
+}
+function setProg(n){ localStorage.setItem(KEY_PROG, JSON.stringify({max:n})); }
+
+function getSolved(){
+  try{ return JSON.parse(localStorage.getItem(KEY_SOLVED)||'[]'); }
+  catch(e){ return []; }
+}
+function setSolved(arr){ localStorage.setItem(KEY_SOLVED, JSON.stringify(arr)); }
+
+function getHints(){
+  try{ return JSON.parse(localStorage.getItem(KEY_HINTS)||'[]'); }
+  catch(e){ return []; }
+}
+function setHints(arr){ localStorage.setItem(KEY_HINTS, JSON.stringify(arr)); }
+
+function hintKey(chId, idx){ return `${chId}:${idx}`; }
+function isHintUsed(chId, idx){ return getHints().includes(hintKey(chId, idx)); }
+
+/* =========================================================
+   PUNTUACIÓN / HUD
+   ========================================================= */
+function countHints(){ return getHints().length; }
+function countSolved(){ return getSolved().length; }
+function solvedSet(){ return new Set(getSolved()); }
+function hintsForChallenge(chId){
+  return getHints().filter(k=>k.startsWith(`${chId}:`)).length;
+}
+function challengePointsEffective(chId){
+  const ch = CHALLS.find(c=>c.id===chId);
+  return Math.max(0, (ch?.points||0) - (25 * hintsForChallenge(chId)));
+}
+function totalScore(){
+  const solved = solvedSet();
+  let sum = 0;
+  for(const ch of CHALLS){
+    if(solved.has(ch.id)) sum += ch.points;
+  }
+  return Math.max(0, sum - (25 * countHints()));
+}
+function renderHUD(){
+  document.getElementById('hudScore').textContent = String(totalScore());
+  document.getElementById('hudHints').textContent = String(countHints());
+  document.getElementById('hudSolved').textContent = String(countSolved());
+  document.getElementById('hudTotal').textContent = String(CHALLS.length);
+}
+
+/* =========================================================
+   GRID
+   ========================================================= */
+const grid = document.getElementById('grid');
+function renderGrid(){
+  const {max} = getProg();
+  const solved = solvedSet();
+  grid.innerHTML = "";
+
+  CHALLS.forEach(ch=>{
+    const unlocked = ch.id <= max;
+    const done = solved.has(ch.id);
+
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'card' + (unlocked ? '' : ' locked');
+    card.disabled = !unlocked;
+
+    const status = done ? 'RESUELTO' : (unlocked ? 'DISPONIBLE' : 'BLOQUEADO');
+
+    card.innerHTML = `
+      <div class="title">${ch.title}</div>
+      <div class="meta">
+        <div class="points">${ch.points} pts</div>
+        <div class="status">${status}</div>
+      </div>
+    `;
+
+    if(unlocked){ card.addEventListener('click', ()=>openCh(ch.id)); }
+    grid.appendChild(card);
+  });
+
+  renderHUD();
+}
+
+/* =========================================================
+   MODAL + PISTAS
+   ========================================================= */
+const modal = document.getElementById('modal');
+const chBody = document.getElementById('ch-body');
+
+function openCh(id){
+  const ch = CHALLS.find(c=>c.id===id);
+  const eff = challengePointsEffective(id);
+
+  const hintsHtml = (ch.hints && ch.hints.length)
+    ? `
+      <div class="hints">
+        <h3>Pistas <span class="hintmeta">(cada pista: -25 pts)</span></h3>
+        ${ch.hints.map((h, i)=>{
+          const used = isHintUsed(id, i);
+          return `
+            <div class="hintrow">
+              <button type="button" class="btn hintbtn" onclick="revealHint(${id},${i})" ${used?'disabled':''}>
+                ${used ? 'Pista revelada' : 'Ver pista'}
+              </button>
+              <div id="hint_${id}_${i}" class="hinttext ${used?'open':''}">${h}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `
+    : '';
+
+  chBody.innerHTML = `
+    <div class="hero-rt">
+      <h2>${ch.title}</h2>
+      <div class="pts">${eff} pts <small>(base: ${ch.points} · penalización por pistas: ${25*hintsForChallenge(id)})</small></div>
+    </div>
+    ${ch.html}
+    ${hintsHtml}
+    <div class="field">
+      <label for="flagInput">Bandera</label>
+      <input id="flagInput" autocomplete="off" placeholder="Introduce la bandera">
+      <div class="actions">
+        <button class="btn primary" id="sendBtn">Enviar</button>
+        <button class="btn ghost" type="button" onclick="closeModal()">Cerrar</button>
+        <span id="msg" class="msg"></span>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add('open');
+
+  const input = document.getElementById('flagInput');
+  const btn = document.getElementById('sendBtn');
+  const send = ()=>submitFlag(id);
+  btn.addEventListener('click', send);
+  input.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); send(); } });
+  setTimeout(()=>input.focus(),30);
+}
+
+function closeModal(){ modal.classList.remove('open'); }
+
+function revealHint(chId, idx){
+  if(isHintUsed(chId, idx)) return;
+  const ok = confirm(`Vas a revelar una pista. Coste: -25 puntos. ¿Continuar?`);
+  if(!ok) return;
+
+  const hints = getHints();
+  hints.push(hintKey(chId, idx));
+  setHints(hints);
+
+  const currentInput = (document.getElementById('flagInput')||{}).value || "";
+  openCh(chId);
+  document.getElementById('flagInput').value = currentInput;
+
+  renderHUD();
+}
+
+/* =========================================================
+   LIGHTBOX
+   ========================================================= */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+function openLightbox(src){
+  lightboxImg.src = src;
+  lightbox.classList.add('open');
+}
+function closeLightbox(){
+  lightbox.classList.remove('open');
+  lightboxImg.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+}
+
+/* =========================================================
+   TIEMPO / FINAL
+   ========================================================= */
+const finalModal = document.getElementById('finalModal');
+const btnOK = document.getElementById('btnOK');
+const btnRestart = document.getElementById('btnRestart');
+
+function openFinal(){ finalModal.classList.add('open'); }
+function hideFinal(){ finalModal.classList.remove('open'); }
+
+function ensureStartClock(){
+  if(!localStorage.getItem(KEY_T0)) localStorage.setItem(KEY_T0, String(now()));
+}
+function stopClock(){
+  if(!localStorage.getItem(KEY_T1)) localStorage.setItem(KEY_T1, String(now()));
+}
+function computeTime(){
+  const t0 = Number(localStorage.getItem(KEY_T0)||0);
+  const t1 = Number(localStorage.getItem(KEY_T1)||0);
+  if(t0>0 && t1>t0) return fmt(t1-t0);
+  return "--:--:--";
+}
+function maybeFinish(){
+  if(countSolved() === CHALLS.length){
+    stopClock();
+    document.getElementById('finalTime').textContent = computeTime();
+    document.getElementById('finalScore').textContent = String(totalScore());
+    openFinal();
+  }
+}
+
+/* =========================================================
+   REINICIAR
+   ========================================================= */
+function resetAll(){
+  localStorage.removeItem(KEY_PROG);
+  localStorage.removeItem(KEY_SOLVED);
+  localStorage.removeItem(KEY_HINTS);
+  localStorage.removeItem(KEY_T0);
+  localStorage.removeItem(KEY_T1);
+  hideFinal();
+  setProg(0);
+  setSolved([]);
+  setHints([]);
+  renderGrid();
+}
+finalModal.addEventListener('click',e=>{ if(e.target===finalModal) { hideFinal(); } });
+btnOK.addEventListener('click', ()=>{ hideFinal(); });
+btnRestart.addEventListener('click', resetAll);
+
+/* =========================================================
+   VALIDACIÓN
+   ========================================================= */
+async function submitFlag(id){
+  const ch = CHALLS.find(c=>c.id===id);
+  const input = document.getElementById('flagInput');
+  const msg = document.getElementById('msg');
+
+  const userRaw = (input.value||"");
+  const kind = ch.norm || "lower";
+  const userNorm = normalizeValue(kind, userRaw);
+
+  try{
+    const userHash = await sha256Hex(userNorm);
+    const ok = Array.isArray(ch.expectedHashes) ? ch.expectedHashes.includes(userHash) : (userHash === ch.expectedHash);
+
+    if(ok){
+      msg.textContent = "Correcto";
+      msg.classList.remove('err');
+      msg.classList.add('ok');
+
+      ensureStartClock();
+
+      const solved = getSolved();
+      if(!solved.includes(id)){
+        solved.push(id);
+        setSolved(solved);
+      }
+
+      const p = getProg();
+      if(p.max < id+1) setProg(id+1);
+
+      renderGrid();
+      maybeFinish();
+
+      setTimeout(()=>{ closeModal(); }, 450);
+    }else{
+      msg.textContent = "Incorrecto";
+      msg.classList.remove('ok');
+      msg.classList.add('err');
+    }
+  }catch(e){
+    msg.textContent = "Error calculando SHA-256 en este entorno.";
+    msg.classList.remove('ok');
+    msg.classList.add('err');
+  }
+}
+
+/* ESC / cerrar */
+window.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if(lightbox.classList.contains('open')) closeLightbox();
+    else if(finalModal.classList.contains('open')) hideFinal();
+    else closeModal();
+  }
+});
+modal.addEventListener('click',e=>{ if(e.target===modal) closeModal(); });
+
+/* INIT */
+(function init(){
+  if(!localStorage.getItem(KEY_PROG)) setProg(0);
+  if(!localStorage.getItem(KEY_SOLVED)) setSolved([]);
+  if(!localStorage.getItem(KEY_HINTS)) setHints([]);
+  renderGrid();
+})();
+</script>
+</body>
+</html>
